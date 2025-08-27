@@ -22,13 +22,53 @@ model Users {
   id       Int     @id @default(autoincrement())
   username String
   email    String  @unique
-  password String
+  password String ?
   role_id  Int?
 
   role     Roles?  @relation(fields: [role_id], references: [id])
   admin    Admin[]
   rt       RT[]
+
+  akun     Akun[]        // relasi ke tabel Akun (Google, dst.)
+  sesi     Sesi[]        // relasi ke tabel Sesi
 }
+
+model Akun {
+  id                Int     @id @default(autoincrement())
+  penggunaId        Int
+  jenis             String              // type
+  penyedia          String              // provider (google, credentials, dll)
+  idAkunPenyedia    String              // providerAccountId
+  token_refresh     String?  @db.Text
+  token_akses       String?  @db.Text
+  kadaluarsa        Int?                 // expires_at
+  tipe_token        String?              // token_type
+  lingkup           String?              // scope
+  token_id          String?  @db.Text    // id_token
+  status_sesi       String?              // session_state
+
+  pengguna          Users   @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+
+  @@unique([penyedia, idAkunPenyedia])
+}
+
+model Sesi {
+  id           Int      @id @default(autoincrement())
+  token_sesi   String   @unique    // sessionToken
+  penggunaId   Int
+  kadaluarsa   DateTime             // expires
+
+  pengguna     Users    @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+}
+
+model TokenVerifikasi {
+  identifier String
+  token      String   @unique
+  kadaluarsa DateTime
+
+  @@unique([identifier, token])
+}
+
 
 model Roles {
   id          Int     @id @default(autoincrement())

@@ -2,10 +2,11 @@ export * from './HeroSection';
 import LogoImage from '../../public/assets/e-government.png';
 import HeroImage from '../../public/assets/hero.jpg';
 import LogoHero from '../../public/assets/logo-hero.png'
-import Card from '@/components/HeroSection/card'
+import Card from '@/components/HeroSection/Card'
 import Main from '@/components/HeroSection/main';
 import TentangImage from '../../public/asset2/3A.png';
-
+import FormRegister from './auth/register/form-register';
+import LoginPage from './auth/login/form-login';
 
 
 
@@ -22,7 +23,10 @@ export
  HeroImage,
  LogoHero,
  Card,
- Main
+ Main,
+ FormRegister,
+ LoginPage
+
  };
 
 

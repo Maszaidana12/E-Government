@@ -87,7 +87,7 @@ const NavLink = () => {
             >
               <li>
                 <Link
-                  href="/login/admin"
+                  href="/auth/login/adminRT"
                   onClick={() => setLoginOpen(false)}
                   className="block px-4 py-2 hover:bg-blue-500 hover:text-white"
                 >
@@ -96,7 +96,7 @@ const NavLink = () => {
               </li>
               <li>
                 <Link
-                  href="/login/user"
+                  href="auth/login/user"
                   onClick={() => setLoginOpen(false)}
                   className="block px-4 py-2 hover:bg-blue-500 hover:text-white"
                 >
