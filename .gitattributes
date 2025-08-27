@@ -1,0 +1,3 @@
+# Ignore JS files in GitHub language stats
+*.js linguist-vendored
+package-lock.json linguist-vendored
