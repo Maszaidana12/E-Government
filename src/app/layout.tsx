@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
-import Navbar  from "@/components/HeroSection/Navbar";
-import  Hero  from "@/components/HeroSection/Hero";
-import Footer from "@/components/HeroSection/footer";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -10,25 +7,22 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-
-
 export const metadata: Metadata = {
   title: "E-Government",
-  description: "Aplikasi Website Masyarakat ",
+  description: "Aplikasi Website Masyarakat",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${outfit.variable}  antialiased`}
-      > <Navbar/>
-       <main className="bg-white-50 min-h-screen">{children}</main> 
-       <Footer />
+      <body className={`${outfit.variable} antialiased`}>
+        
+        <main className="bg-white min-h-screen">{children}</main>
+       
       </body>
     </html>
   );
