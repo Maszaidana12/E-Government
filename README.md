@@ -6,10 +6,9 @@ Proyek ini dibuat sebagai media pembelajaran sekaligus implementasi teknologi we
 ---
 
 ## ✨ Fitur Utama
-- 🔹 **Hero Section(Halaman Publik)**  -> (70%) akses halaman publik untuk masyarakat luas 
-- 🔹 **Login Warga** → (on progress) akses fitur layanan untuk masyarakat.
-- 🔹 **Login Petugas** → (on progress) akses dashboard khusus RT/RW atau perangkat desa.
-- 🔹 **Dashboard** → (on progress) menampilkan data dan layanan sesuai role.
+- 🔹 **Hero Section(Halaman Publik)**  -> (90%) akses halaman publik untuk masyarakat luas 
+- 🔹 **Login** → (100%) akses fitur layanan untuk masyarakat.
+- 🔹 **Dashboard** → (40%) menampilkan data dan layanan sesuai role.
 - 🔹 **Lainnya(Administrasi, Surat Menyurat digital)** -> (on progress)
 
 ---
