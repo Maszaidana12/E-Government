@@ -1,6 +1,6 @@
 import { LoginPage } from "@/components/index"
 
-const AdminRTPage = () => {
+const UserLoginPage = () => {
   return (
     <div>
       <LoginPage />
@@ -8,4 +8,4 @@ const AdminRTPage = () => {
   )
 }
 
-export default AdminRTPage
+export default UserLoginPage

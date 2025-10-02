@@ -1,63 +1,76 @@
-import NextAuth from "next-auth"
-import Credentials from "next-auth/providers/credentials"
-import GoogleProvider from "next-auth/providers/google"
-import {PrismaAdapter} from "@auth/prisma-adapter"
-import {prisma} from "./lib/prisma"
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "./lib/prisma";
+import { LoginUserSchema } from "lib/zod";
+import bcrypt from "bcryptjs";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    adapter: PrismaAdapter(prisma),
-    providers: [
+  adapter: PrismaAdapter(prisma),
+  secret: process.env.AUTH_SECRET,
+  providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
 
-
     Credentials({
+      id: "credentials",
+      name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text" },
+        UsernameOrNik: { label: "Username / NIK", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        
-        const { username, password } = credentials as {
-          username: string;
-          password: string;
-          
-        };
-        
-        
-        // Panggil API backend kamu
-        const response = await fetch("http://localhost:3000/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
+        const parsed = LoginUserSchema.safeParse(credentials);
+        if (!parsed.success) return null;
+
+        const { UsernameOrNik, password } = parsed.data;
+
+        const user = await prisma.users.findFirst({
+          where: {
+            OR: [{ username: UsernameOrNik }, { nik: UsernameOrNik }],
+          },
+          include: { role: true },
         });
 
-        if (!response.ok) return null;
-
-        const user = await response.json();
         if (!user) return null;
 
+        const valid = await bcrypt.compare(password, user.password);
+        if (!valid) return null;
+
         return {
-          id: user.id,
-          name: user.name,
-          username: user.username,
-          role: user.role, // misal kamu punya role di DB
+          id: String(user.id),
+          name: user.nama,
+          role: user.role?.name || "USER",
+          username: user.username ?? undefined,
         };
-        
       },
-      
     }),
-    
   ],
   session: {
-    strategy: "jwt", // biar stateless (lebih cocok untuk API)
+    strategy: "jwt",
   },
   pages: {
-    signIn: "/login", // redirect ke /login kalau belum login
+    signIn: "/login",
   },
-  
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.username = user.username;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub ?? "";
+        session.user.role = token.role as string;
+        session.user.username = token.username as string;
+      }
+      return session;
+    },
+  },
 });
-
-export { handlers as GET, handlers as POST };

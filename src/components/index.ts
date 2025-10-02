@@ -7,25 +7,28 @@ import Main from '@/components/HeroSection/main';
 import TentangImage from '../../public/asset2/3A.png';
 import FormRegister from './auth/register/form-register';
 import LoginPage from './auth/login/form-login';
-
-
+import { PasswordInput } from './auth/PasswordInput';
+import SidebarLink from '@/components/layout/SidebarLink';
+ 
 
 
 export {
-    TentangImage
-}
+    TentangImage,
+};
 
 
 
 export
 { 
+PasswordInput,
  LogoImage,
  HeroImage,
  LogoHero,
  Card,
  Main,
  FormRegister,
- LoginPage
+ LoginPage,
+ SidebarLink
 
  };
 

@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
@@ -14,49 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 // ======================
 // Tabel Users & Roles
 // ======================
 model Users {
-  id       Int     @id @default(autoincrement())
-  username String
-  email    String  @unique
-  password String ?
-  role_id  Int?
+  id          String    @id @default(cuid())
+  nomor_urut  Int       @default(0)
+  nik         String    @unique
+  kk          String?
+  nama        String
+  password    String
+  username    String?   @unique
 
-  role     Roles?  @relation(fields: [role_id], references: [id])
-  admin    Admin[]
-  rt       RT[]
+  upload      FileUploads[]
 
-  akun     Akun[]        // relasi ke tabel Akun (Google, dst.)
-  sesi     Sesi[]        // relasi ke tabel Sesi
-}
-
-model Akun {
-  id                Int     @id @default(autoincrement())
-  penggunaId        Int
-  jenis             String              // type
-  penyedia          String              // provider (google, credentials, dll)
-  idAkunPenyedia    String              // providerAccountId
-  token_refresh     String?  @db.Text
-  token_akses       String?  @db.Text
-  kadaluarsa        Int?                 // expires_at
-  tipe_token        String?              // token_type
-  lingkup           String?              // scope
-  token_id          String?  @db.Text    // id_token
-  status_sesi       String?              // session_state
-
-  pengguna          Users   @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
-
-  @@unique([penyedia, idAkunPenyedia])
+  role_id     String?
+  penduduk    Penduduk? @relation("UserPenduduk")
+  role        Roles?    @relation(fields: [role_id], references: [id])
+  RT          RT[]
+  Sesi       Sesi[]
+  Akun       Account[]
 }
 
 model Sesi {
-  id           Int      @id @default(autoincrement())
-  token_sesi   String   @unique    // sessionToken
-  penggunaId   Int
-  kadaluarsa   DateTime             // expires
+  id           String   @id @default(cuid())
+  token_sesi   String   @unique
+  penggunaId   String
+  kadaluarsa   DateTime
 
   pengguna     Users    @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
 }
@@ -69,10 +46,24 @@ model TokenVerifikasi {
   @@unique([identifier, token])
 }
 
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String   // e.g. "credentials" | "oauth"
+  provider          String   // e.g. "google" | "credentials"
+  providerAccountId String   // ID unik dari provider (misal sub dari Google)
+  access_token      String?  // token oauth (opsional)
+  refresh_token     String?  // token oauth (opsional)
+  expires_at        Int?     // kapan token oauth kadaluarsa
+
+  user              Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
 
 model Roles {
-  id          Int     @id @default(autoincrement())
-  name        String
+  id          String   @id @default(cuid())
+  name        String   @unique
   description String?
 
   users       Users[]
@@ -81,23 +72,15 @@ model Roles {
 // ======================
 // Tabel Admin & RT
 // ======================
-model Admin {
-  id           Int     @id @default(autoincrement())
-  user_id      Int?
-  nama_lengkap String
-  no_hp        String?
-  alamat       String?
-
-  user         Users?  @relation(fields: [user_id], references: [id])
-}
-
 model RT {
-  id_rt        Int     @id @default(autoincrement())
-  user_id      Int?
+  id_rt        String   @id @default(cuid())
+  user_id      String?
   nomor_rt     Int
   nama_lengkap String
   no_hp        String?
   alamat       String?
+
+  upload      FileUploads[]
 
   user         Users?      @relation(fields: [user_id], references: [id])
   penduduk     Penduduk[]
@@ -107,59 +90,25 @@ model RT {
 // Tabel KK & Penduduk
 // ======================
 model KK {
-  id_kk              Int       @id @default(autoincrement())
-  no_kk              String    @unique
-  kepala_keluarga_id Int       @unique
-  alamat             String
-  rt                 String
-  rw                 String
+  id_kk              String     @id @default(cuid())
+  no_kk              String     @unique
+  kepala_keluarga_id String?     @unique
+  alamat             String?
+  rt                 String?
+  rw                 String?
   kode_pos           String?
-  desa_kelurahan     String
-  kecamatan          String
-  kabupaten_kota     String
-  provinsi           String
+  desa_kelurahan     String?
+  kecamatan          String?
+  kabupaten_kota     String?
+  provinsi           String?
 
-  kepala_keluarga    Penduduk  @relation("KepalaKeluarga", fields: [kepala_keluarga_id], references: [id_penduduk])
+  kepala_keluarga    Penduduk?   @relation("KepalaKeluarga", fields: [kepala_keluarga_id], references: [id_penduduk])
   anggota            Penduduk[] @relation("AnggotaKK")
 }
 
-model Penduduk {
-  id_penduduk             Int        @id @default(autoincrement())
-  nik                     String     @unique
-  nama                    String
-  password                String
-  jenis_kelamin           JenisKelamin
-  tanggal_lahir           DateTime
-  alamat                  String
-  no_rt                   Int?
-  status_warga            StatusWarga? @default(tetap)
-  id_kk                   Int?
-  tempat_lahir            String
-  agama                   String?
-  pekerjaan               String?
-  pendidikan_terakhir     String?
-  gol_darah               GolDarah?
-  status_perkawinan       StatusPerkawinan?
-  tanggal_perkawinan      DateTime?
-  hubungan_dalam_keluarga String?
-  kewarganegaraan         String?   @default("WNI")
-  no_paspor               String?   @default("-")
-  no_kitap                String?   @default("-")
-  nama_ayah               String?
-  nama_ibu                String?
-
-  rt                      RT?       @relation(fields: [no_rt], references: [id_rt])
-  kk                      KK?       @relation("AnggotaKK", fields: [id_kk], references: [id_kk])
-  kk_kepala               KK?       @relation("KepalaKeluarga")
-  surat_pengajuan         SuratPengajuan[]
-}
-
-// ======================
-// Tabel Surat Pengajuan
-// ======================
 model SuratPengajuan {
-  id_surat            Int              @id @default(autoincrement())
-  id_penduduk         Int
+  id_surat            String           @id @default(cuid())
+  id_penduduk         String
   jenis_surat         JenisSurat
   keterangan          String?
   tanggal_pengajuan   DateTime?        @default(now())
@@ -167,12 +116,73 @@ model SuratPengajuan {
   tanggal_pengambilan DateTime?
   status              StatusPengajuan? @default(Diajukan)
 
+  upload              FileUploads[]
+
+
   penduduk            Penduduk         @relation(fields: [id_penduduk], references: [id_penduduk])
 }
+
+model Penduduk {
+  id_penduduk   String    @id @default(cuid())
+  nik           String    @unique
+  nama          String
+  id_kk         String?
+  user_id       String?   @unique
+
+  user          Users?    @relation("UserPenduduk" ,fields: [user_id], references: [id])
+  kk            KK?       @relation("AnggotaKK", fields: [id_kk], references: [id_kk])
+  kk_kepala     KK?       @relation("KepalaKeluarga")
+  id_rt         String?
+  RT            RT?       @relation(fields: [id_rt], references: [id_rt])
+  surat_pengajuan SuratPengajuan[]
+
+  jenis_kelamin           JenisKelamin?
+  tanggal_lahir           DateTime?
+  alamat                  String?
+  status_warga            StatusWarga?     @default(tetap)
+  tempat_lahir            String?
+  agama                   String?
+  pekerjaan               String?
+  pendidikan_terakhir     String?
+  gol_darah               GolDarah?
+  status_perkawinan       StatusPerkawinan?
+  tanggal_perkawinan      DateTime?
+  hubungan_dalam_keluarga String?
+  kewarganegaraan         String?          @default("WNI")
+  no_paspor               String?          @default("-")
+  no_kitap                String?          @default("-")
+  nama_ayah               String?
+  nama_ibu                String?
+}
+
+model FileUploads {
+  id          String   @id @default(cuid())
+  user_id     String?
+  surat_id    String?
+  rt_id       String?
+  jenis_file  JenisFile
+  path        String   // URL atau lokasi file tersimpan
+  uploaded_at DateTime @default(now())
+
+  Users            Users?          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  SuratPengajuan   SuratPengajuan? @relation(fields: [surat_id], references: [id_surat], onDelete: Cascade)
+  RT               RT?             @relation(fields: [rt_id], references: [id_rt], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+}
+
 
 // ======================
 // ENUMS
 // ======================
+
+enum JenisFile {
+  KTP
+  KK
+  SURAT
+  LAINNYA
+}
+
+
 enum JenisKelamin {
   laki_laki
   perempuan

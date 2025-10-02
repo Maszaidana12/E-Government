@@ -20,9 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.variable} antialiased`}>
-        
         <main className="bg-white min-h-screen">{children}</main>
-       
       </body>
     </html>
   );
