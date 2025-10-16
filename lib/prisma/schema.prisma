@@ -1,0 +1,255 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ======================
+// Tabel Users & Roles
+// ======================
+model Users {
+  id          String    @id @default(cuid())
+  nik         String    @unique(map: "Users_nik_key") @db.VarChar(16)
+  nama        String?
+  peran       String
+  password    String
+  penduduk    Penduduk @relation(fields: [nik], references: [nik], onDelete: Cascade, map: "Users_nik_fkey")
+
+  accounts     Account[]
+  sessions     Sesi[]
+}
+
+model Sesi {
+  id           String   @id @default(cuid())
+  token_sesi   String   @unique
+  penggunaId   String
+  kadaluarsa   DateTime
+
+  pengguna     Users    @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+}
+
+model TokenVerifikasi {
+  identifier String
+  token      String   @unique
+  kadaluarsa DateTime
+
+  @@unique([identifier, token])
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String   // e.g. "credentials" | "oauth"
+  provider          String   // e.g. "google" | "credentials"
+  providerAccountId String   // ID unik dari provider (misal sub dari Google)
+  access_token      String?  // token oauth (opsional)
+  refresh_token     String?  // token oauth (opsional)
+  expires_at        Int?     // kapan token oauth kadaluarsa
+
+
+  user              Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+
+// ======================
+// Tabel Admin & RT
+// ======================
+model RT {
+
+  id_rt         Int             @id @unique(map: "RT_id_rt_key") @default(autoincrement())
+  nomor_rt      String             @unique(map: "RT_nomor_rt_key") @db.VarChar(6)
+  nama_lengkap  String
+  no_hp         String?          @db.VarChar(13)
+  alamat        String?
+  nik           String?         @unique(map: "RT_nik_key") @db.VarChar(16)
+  upload        FileUploads[]
+  kartukeluarga KK[]
+  penduduk      Penduduk?       @relation(fields: [nik], references: [nik], map: "RT_nik_fkey")
+}
+
+// ======================
+// Tabel KK & Pendudu
+// ======================
+model KK {
+
+  id_kk              Int        @unique(map: "KartuKeluarga_id_kk_key") @default(autoincrement())
+  no_kk              String     @id @unique(map: "KartuKeluarga_no_kk_key") @db.VarChar(16)
+  alamat             String?
+  nomor_rt           String?    @db.VarChar(6)
+  kode_pos           String?
+  desa_kelurahan     String?
+  kecamatan          String?
+  kabupaten_kota     String?
+  provinsi           String?
+
+  rt                 RT?         @relation(fields: [nomor_rt], references: [nomor_rt], map: "KartuKeluarga_nomor_rt_fkey")
+  penduduk           Penduduk[]
+
+  @@index([nomor_rt], map: "KartuKeluarga_nomor_rt_fkey")
+  
+}
+
+model SuratPengajuan {
+  id_surat            String                     @id
+  nik                 String?                    @db.VarChar(16)
+  jenis_surat         suratpengajuan_jenis_surat
+  keterangan          String?
+  tanggal_pengajuan   DateTime?                  @default(now())
+  tanggal_proses      DateTime?
+  tanggal_pengambilan DateTime?
+  status              suratpengajuan_status?     @default(Diajukan)
+  fileuploads         FileUploads[]
+  penduduk            Penduduk?                  @relation(fields: [nik], references: [nik], map: "SuratPengajuan_nik_fkey")
+
+  @@index([nik], map: "SuratPengajuan_nik_fkey")
+}
+
+model Penduduk {
+  id_penduduk       Int                        @unique(map: "Penduduk_id_penduduk_key") @default(autoincrement())
+  nik               String                     @id @unique(map: "Penduduk_nik_key") @db.VarChar(16)
+  nama              String
+  user              Users?          
+  jenis_kelamin     penduduk_jenis_kelamin
+  tempat_lahir      String
+  tanggal_lahir     DateTime                   @db.Date
+  agama             penduduk_agama
+  pendidikan        penduduk_pendidikan
+  pekerjaan         String
+  golongan_darah    penduduk_golongan_darah
+  status_perkawinan penduduk_status_perkawinan
+  kewarganegaraan   penduduk_kewarganegaraan
+  status_hubungan   penduduk_status_hubungan
+  no_kk             String?                    @db.VarChar(16)
+  fileuploads       FileUploads[]
+  kartukeluarga     KK?             @relation(fields: [no_kk], references: [no_kk], map: "Penduduk_no_kk_fkey")
+  rt                RT?
+  suratpengajuan    SuratPengajuan[]
+
+   @@index([no_kk], map: "Penduduk_no_kk_fkey")
+}
+
+
+
+model permohonan {
+  id_permohonan         Int       @id @default(autoincrement())
+  nik                   String    
+  tujuan                String   
+  status                String
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  riwayat               riwayat[]
+
+}
+
+
+model riwayat {
+  id_riwayat
+  id_permohonan
+
+}
+
+
+model FileUploads {
+  id             Int                    @id @default(autoincrement())
+  id_surat       String?
+  id_rt          Int?
+  jenis_file     fileuploads_jenis_file
+  path           String
+  uploaded_at    DateTime               @default(now())
+  updatedAt      DateTime
+  nik            String?                @db.VarChar(16)
+  rt             RT?                    @relation(fields: [id_rt], references: [id_rt], map: "FileUploads_id_rt_fkey")
+  suratpengajuan SuratPengajuan?        @relation(fields: [id_surat], references: [id_surat], map: "FileUploads_id_surat_fkey")
+  penduduk       Penduduk?              @relation(fields: [nik], references: [nik], map: "FileUploads_nik_fkey")
+
+  @@index([id_rt], map: "FileUploads_id_rt_fkey")
+  @@index([id_surat], map: "FileUploads_id_surat_fkey")
+  @@index([nik], map: "FileUploads_nik_fkey")
+}
+
+
+// ======================
+// ENUMS
+// ======================
+
+enum suratpengajuan_jenis_surat {
+  Surat_Pengantar
+  Surat_Domisili
+  Surat_Keterangan
+  Surat_Usaha
+  Surat_Pembuatan_KTP
+}
+
+enum fileuploads_jenis_file {
+  KTP
+  KK
+  SURAT
+  LAINNYA
+}
+
+enum penduduk_jenis_kelamin {
+  laki_laki
+  perempuan
+}
+
+enum penduduk_agama {
+  Islam
+  Kristen
+  Katolik
+  Hindu
+  Buddha
+  Konghucu
+  Kepercayaan
+}
+
+enum suratpengajuan_status {
+  Diajukan
+  Diproses
+  Selesai
+  Diambil
+}
+
+enum penduduk_pendidikan {
+  Tidak_Sekolah
+  SD
+  SMP
+  SMA
+  Diploma
+  S1
+  S2
+  S3
+}
+
+enum penduduk_golongan_darah {
+  A
+  B
+  AB
+  O
+  Tidak_Tahu
+}
+
+enum penduduk_status_perkawinan {
+  Belum_Kawin
+  Kawin
+  Cerai_Hidup
+  Cerai_Mati
+}
+
+enum penduduk_kewarganegaraan {
+  WNI
+  WNA
+}
+
+enum penduduk_status_hubungan {
+  Kepala_Keluarga
+  Istri
+  Anak
+  Orang_Tua
+  Lainnya
+}
