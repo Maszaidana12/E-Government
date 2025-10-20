@@ -1,52 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
+import { DataPendudukCreate } from "@/app/akun/penduduk/validation/actions";
 
 const CreateFormPenduduk = () => {
-    const [formData, setFormData] = useState ({
-        nik: "",
-        nama: "",
-        jenis_kelamin: "",
-        tempat_lahir: "",
-        tanggal_lahir: "",
-        agama: "",
-        alamat: "",
-        pekerjaan: "",
-        golongan_darah : " ",
-        status_perkawinan: " ",
-        kewarganegaraan: " ",
-        status_hubungan: " "
-    });
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Data dikirim:", formData);
-    // nanti di sini tinggal fetch ke API misalnya POST /api/penduduk
-  };
-
-
-
-
+  const [state, formAction] = useActionState(DataPendudukCreate, null)
   return (
     <div className="max-w-3xl mx-auto bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md">
       <h2 className="text-xl font-semibold mb-6">Tambah Data Penduduk</h2>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form action={formAction} className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="nik" className="block text-sm font-medium mb-1">NIK</label>
           <input
             type="text"
             id="nik"
             name="nik"
-            value={formData.nik}
-            onChange={handleChange}
             placeholder="Masukkan NIK..."
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           />
+          <div id = "nik-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.nik}</p>
+          </div>
         </div>
 
         <div>
@@ -55,11 +30,12 @@ const CreateFormPenduduk = () => {
             type="text"
             id="nama"
             name="nama"
-            value={formData.nama}
-            onChange={handleChange}
             placeholder="Masukkan Nama..."
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           />
+          <div id = "nama-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.nama}</p>
+          </div>
         </div>
 
         <div>
@@ -67,14 +43,15 @@ const CreateFormPenduduk = () => {
           <select
             id="jenis_kelamin"
             name="jenis_kelamin"
-            value={formData.jenis_kelamin}
-            onChange={handleChange}
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           >
             <option value="">Pilih Jenis Kelamin</option>
-            <option value="L">Laki-laki</option>
-            <option value="P">Perempuan</option>
+            <option value="laki_laki">Laki-laki</option>
+            <option value="perempuan">Perempuan</option>
           </select>
+          <div id = "jenis_kelamin-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.jenis_kelamin}</p>
+          </div>
         </div>
 
         <div>
@@ -83,11 +60,12 @@ const CreateFormPenduduk = () => {
             type="text"
             id="tempat_lahir"
             name="tempat_lahir"
-            value={formData.tempat_lahir}
-            onChange={handleChange}
             placeholder="Masukkan Tempat Lahir..."
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           />
+          <div id = "tempat_lahir-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.tempat_lahir}</p>
+          </div>
         </div>
 
         <div>
@@ -96,10 +74,11 @@ const CreateFormPenduduk = () => {
             type="date"
             id="tanggal_lahir"
             name="tanggal_lahir"
-            value={formData.tanggal_lahir}
-            onChange={handleChange}
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           />
+          <div id = "tanggal_lahir-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.tanggal_lahir}</p>
+          </div>
         </div>
 
         <div>
@@ -107,8 +86,6 @@ const CreateFormPenduduk = () => {
           <select
             id="agama"
             name="agama"
-            value={formData.agama}
-            onChange={handleChange}
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           >
             <option value="">Pilih Agama</option>
@@ -119,19 +96,50 @@ const CreateFormPenduduk = () => {
             <option value="Buddha">Buddha</option>
             <option value="Konghucu">Konghucu</option>
           </select>
+          <div id = "agama-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.agama}</p>
+          </div>
         </div>
 
-        <div className="md:col-span-2">
-          <label htmlFor="alamat" className="block text-sm font-medium mb-1">Alamat</label>
-          <input
-            type="text"
-            id="alamat"
-            name="alamat"
-            value={formData.alamat}
-            onChange={handleChange}
-            placeholder="Masukkan Alamat Lengkap..."
+
+           <div>
+          <label htmlFor="pendidikan" className="block text-sm font-medium mb-1"> Pendidikan</label>
+          <select
+            id="pendidikan"
+            name="pendidikan"
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
-          />
+          >
+            <option value="Tidak_Sekolah">Tidak Sekolah</option>
+            <option value="SD">SD</option>
+            <option value="SMP">SMP</option>
+            <option value="SMA">SMA</option>
+            <option value="Diploma">Diploma</option>
+            <option value="S1">S1</option>
+            <option value="S2">S2</option>
+            <option value="S3">S3</option>
+          </select>
+          <div id = "pendidikan-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.pendidikan}</p>
+          </div>
+        </div>
+
+         <div>
+          <label htmlFor="golongan_darah" className="block text-sm font-medium mb-1">Golongan Darah</label>
+          <select
+            id="golongan_darah"
+            name="golongan_darah"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">Golongan Darah</option>
+            <option value="A">A</option>
+            <option value="B">AB</option>
+            <option value="B">B</option>
+            <option value="O">O</option>
+            <option value="Tidak_Tahu">Tidak Tahu</option>
+          </select>
+          <div id = "golongan_darah-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.golongan_darah}</p>
+          </div>
         </div>
 
         <div>
@@ -140,28 +148,12 @@ const CreateFormPenduduk = () => {
             type="text"
             id="pekerjaan"
             name="pekerjaan"
-            value={formData.pekerjaan}
-            onChange={handleChange}
             placeholder="Masukkan Pekerjaan..."
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           />
-        </div>
-
-        <div>
-          <label htmlFor="golongan_darah" className="block text-sm font-medium mb-1">Golongan Darah</label>
-          <select
-            id="golongan_darah"
-            name="golongan_darah"
-            value={formData.golongan_darah}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="">Golongan Darah</option>
-            <option value="A">A</option>
-            <option value="B">AB</option>
-            <option value="B">B</option>
-            <option value="O">O</option>
-          </select>
+          <div id = "pekerjaan-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.pekerjaan}</p>
+          </div>
         </div>
 
         <div>
@@ -169,16 +161,17 @@ const CreateFormPenduduk = () => {
           <select
             id="status_perkawinan"
             name="status_perkawinan"
-            value={formData.status_perkawinan}
-            onChange={handleChange}
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           >
             <option value="">Status Perkawinan</option>
             <option value="Belum_Kawin">Belum Kawin</option>
             <option value="Kawin">Kawin</option>
-            <option value="Cerai_Mati">Cerai Hidup</option>
+            <option value="Cerai_Hidup">Cerai Hidup</option>
             <option value="Cerai_Mati">Cerai Mati</option>
           </select>
+          <div id = "status_perkawinan-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.status_perkawinan}</p>
+          </div>
         </div>
         
          <div>
@@ -186,14 +179,15 @@ const CreateFormPenduduk = () => {
           <select
             id="kewarganegaraan"
             name="kewarganegaraan"
-            value={formData.kewarganegaraan}
-            onChange={handleChange}
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           >
             <option value="">Kewarganegaraan</option>
-            <option value="Belum_Kawin">WNI</option>
-            <option value="Kawin">WNA</option>
+            <option value="WNI">WNI</option>
+            <option value="WNA">WNA</option>
           </select>
+          <div id = "kewarganegaraan-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.kewarganegaraan}</p>
+          </div>
         </div>
 
          <div>
@@ -201,17 +195,21 @@ const CreateFormPenduduk = () => {
           <select
             id="status_hubungan"
             name="status_hubungan"
-            value={formData.status_hubungan}
-            onChange={handleChange}
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           >
             <option value="">Status Hubungan</option>
-            <option value="kepala_keluarga">Kepala Keluarga</option>
-            <option value="istri">Istri</option>
-            <option value="anak">Anak</option>
-            <option value="orang_tua">Orang Tua</option>
+            <option value="Kepala_Keluarga">Kepala Keluarga</option>
+            <option value="Istri">Istri</option>
+            <option value="Anak">Anak</option>
+            <option value="Orang_Tua">Orang Tua</option>
           </select>
+          <div id = "status_hubungan-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.status_hubungan}</p>
+          </div>
         </div>
+        <div id = "message-error" aria-live = "polite" aria-atomic = "true">
+            <p className="mt-2 text-sm text-red-500">{state?.Error?.nama}</p>
+          </div>
         <div className="md:col-span-2 flex justify-end mt-4">
           <button
             type="submit"
