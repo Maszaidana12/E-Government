@@ -16,6 +16,7 @@ model Users {
   nama        String?
   peran       String
   password    String
+  images      String?
   penduduk    Penduduk @relation(fields: [nik], references: [nik], onDelete: Cascade, map: "Users_nik_fkey")
 
   accounts     Account[]
@@ -95,16 +96,19 @@ model KK {
 }
 
 model SuratPengajuan {
-  id_surat            String                     @id
-  nik                 String?                    @db.VarChar(16)
+  id_surat            Int                @id @default(autoincrement())
+  nik                 String?            @db.VarChar(16)
   jenis_surat         suratpengajuan_jenis_surat
   keterangan          String?
-  tanggal_pengajuan   DateTime?                  @default(now())
+  tanggal_pengajuan   DateTime?          @default(now())
   tanggal_proses      DateTime?
   tanggal_pengambilan DateTime?
-  status              suratpengajuan_status?     @default(Diajukan)
+  status              suratpengajuan_status? @default(Diajukan)
   fileuploads         FileUploads[]
-  penduduk            Penduduk?                  @relation(fields: [nik], references: [nik], map: "SuratPengajuan_nik_fkey")
+  penduduk            Penduduk?          @relation(fields: [nik], references: [nik], map: "SuratPengajuan_nik_fkey")
+
+  id_permohonan       Int?
+  permohonan          Permohonan?        @relation("PermohonanSurat", fields: [id_permohonan], references: [id_permohonan])
 
   @@index([nik], map: "SuratPengajuan_nik_fkey")
 }
@@ -129,35 +133,47 @@ model Penduduk {
   kartukeluarga     KK?             @relation(fields: [no_kk], references: [no_kk], map: "Penduduk_no_kk_fkey")
   rt                RT?
   suratpengajuan    SuratPengajuan[]
+  permohonan        Permohonan[]
 
    @@index([no_kk], map: "Penduduk_no_kk_fkey")
 }
 
 
 
-model permohonan {
-  id_permohonan         Int       @id @default(autoincrement())
-  nik                   String    
-  tujuan                String   
-  status                String
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+model Permohonan {
+  id_permohonan       Int                @id @default(autoincrement())
+  nik                 String             @db.VarChar(16)
+  tujuan              String
+  status              String
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
 
-  riwayat               riwayat[]
+  penduduk            Penduduk           @relation(fields: [nik], references: [nik], onDelete: Cascade, map: "Permohonan_nik_fkey")
+  riwayat             Riwayat[]
+
+  surat               SuratPengajuan[]   @relation("PermohonanSurat") // satu Permohonan punya banyak Surat
+
+  @@index([nik], map: "Permohonan_nik_index")
 
 }
 
 
-model riwayat {
-  id_riwayat
-  id_permohonan
+model Riwayat {
+  id_riwayat        Int         @id @default(autoincrement())
+  id_permohonan     Int
+  status            String
+  changeAt          DateTime    @default(now())
+
+  permohonan        Permohonan  @relation(fields: [id_permohonan], references: [id_permohonan], onDelete: Cascade)
+
+  @@index([id_permohonan])
 
 }
 
 
 model FileUploads {
   id             Int                    @id @default(autoincrement())
-  id_surat       String?
+  id_surat       Int
   id_rt          Int?
   jenis_file     fileuploads_jenis_file
   path           String

@@ -1,12 +1,12 @@
 import { auth } from "auth";
-import DashboardClientLayout from "./layoutclient";
+import ClientLayout from "./layoutclient";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
   return (
-    <DashboardClientLayout session={session}>
+    <ClientLayout session={session}>
       {children}
-    </DashboardClientLayout>
+    </ClientLayout>
   );
 }

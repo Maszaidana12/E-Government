@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Navbar, Sidebar, Footer } from "@/components/layout";
+import { Navbar, Sidebar } from "@/components/layout";
 import { Session } from "next-auth";
 import { NavbarProvider } from "../context/NavbarContext";
 
-export default function ClientLayout({
+
+export default function ClientLayoutAkun({
   session,
   children,
 }: {
@@ -16,8 +17,7 @@ export default function ClientLayout({
 
   return (
     <NavbarProvider>
-        ❌ Hapus overflow-hidden dari wrapper utama
-    <div className="flex h-screen">
+       <div className="flex h-screen">
       {/* Sidebar */}
       <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
@@ -35,18 +35,15 @@ export default function ClientLayout({
         />
 
         {/* Bagian tengah (konten yang bisa scroll) */}
-        <div className="flex-1 overflow-auto bg-gray-50 dark:bg-slate-900 px-6 pt-20 pb-6">
+        <div className="flex-1 overflow-auto bg-white dark:bg-slate-900 px-6  pb-3">
           {children}
         </div>
 
         {/* Footer selalu di bawah */}
-        <div className="mt-auto">
-          <Footer />
-        </div>
+       
       </div>
     </div>
-
     </NavbarProvider>
-    //
+   
   );
 }
