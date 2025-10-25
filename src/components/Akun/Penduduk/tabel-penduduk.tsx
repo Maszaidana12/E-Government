@@ -54,7 +54,7 @@ const TabelPenduduk = async() => {
                 >
                  {col.key === "actions" ? (
                 <div className="items-center">
-                    <EditButton />
+                    <EditButton id={data.id_penduduk}/>
                     <DeleteButton />
                 </div>
                 ) : col.key === "tanggal_lahir" ? (

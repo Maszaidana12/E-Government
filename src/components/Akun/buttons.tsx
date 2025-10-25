@@ -1,6 +1,10 @@
+"use client";
+
 import React from 'react'
 import Link from 'next/link'
 import { IoAddSharp, IoPencil, IoTrashOutline } from 'react-icons/io5'
+import { useFormStatus } from 'react-dom';
+import clsx from 'clsx';
 
 export const CreateButton = () =>{
     return (
@@ -12,14 +16,14 @@ export const CreateButton = () =>{
     );
 };
 
-
-export const EditButton = () =>{
+export const EditButton = ({id}:{id:number}) =>{
     return (
-       <button className='inline-flex items-center p-1 hover:bg-gray-100 border-2 mr-0.5
+       
+       <Link href ={`/akun/penduduk/edit/${id}`} className='inline-flex items-center p-1 hover:bg-gray-100 border-2 mr-0.5
        px-5[9px] rounded-sm text-sm'>
-      <IoTrashOutline size={20} />
+      <IoPencil size={20} />
       Edit
-       </button>
+       </Link>
     );
 };
 
@@ -27,10 +31,32 @@ export const DeleteButton = () =>{
     return (
        <Link href = "/akun/penduduk/" className='inline-flex items-center p-1 hover:bg-gray-100
        px-5[9px] rounded-sm text-sm border-2'>
-      <IoPencil size={20} />
+      <IoTrashOutline size={20} />
       Hapus
        </Link>
     );
 };
 
+export const SubmitButton = ({label}:{label:string}) =>{
+    const {pending} = useFormStatus();
 
+    const className=clsx("px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all", {
+        "opacity-50 cursor-progress": pending
+    })
+
+    return (
+        <button
+            type="submit"
+            className={className}
+            disabled = {pending}
+          >
+            {label === "Create"? (
+                <span>{pending ? "Menyimpan...": "Tambah +"}</span>
+            ):(
+                <span>{pending ? "Edit...": "Edit"}</span>
+            )}
+           
+          </button>
+    )
+
+}

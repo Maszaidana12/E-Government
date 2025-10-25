@@ -1,0 +1,43 @@
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "./lib/prisma";
+import { LoginUserSchema } from "@/app/(auth)/validation/zod";
+import { compareSync } from "bcryptjs";
+
+
+export const { handlers, signIn, signOut, auth} = NextAuth ({
+  adapter : PrismaAdapter(prisma),
+  session: {strategy:"jwt"},
+  pages:{
+    signIn: "/login",
+  },
+  providers : [
+    Credentials({
+      credentials:{
+        nik: {label: "NIK", type: "text"},
+        password: {label: "Password", type: "password"},
+      },
+      authorize: async (credentials) =>{
+        const validasi = LoginUserSchema.safeParse(credentials);
+        
+        if(!validasi.success){
+          return null;
+        }
+        const {nik, password} = validasi.data;
+
+        const user = await prisma.users.findUnique({
+          where: {nik}
+        })
+        if(!user || !user.password){
+          throw new Error("Pengguna tidak ditemukan");
+        }
+        const passwordMatch = compareSync(password, user.password);
+
+        if(!passwordMatch) return null;
+
+        return user;
+      }
+    })
+  ]
+})

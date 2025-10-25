@@ -16,7 +16,7 @@ export default function ClientLayout({
 
   return (
     <NavbarProvider>
-        ❌ Hapus overflow-hidden dari wrapper utama
+        
     <div className="flex h-screen">
       {/* Sidebar */}
       <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />

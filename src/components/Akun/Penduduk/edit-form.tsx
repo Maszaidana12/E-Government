@@ -5,11 +5,11 @@ import { DataPendudukCreate } from "@/app/akun/penduduk/validation/actions";
 import { SubmitButton } from "../buttons";
 
 
-const CreateFormPenduduk = () => {
+const UpdateFormPenduduk = () => {
   const [state, formAction] = useActionState(DataPendudukCreate, null)
   return (
     <div className="max-w-2xl mx-auto bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md">
-      <h2 className="text-xl font-semibold mb-6">Tambah Data Penduduk</h2>
+      <h2 className="text-xl font-semibold mb-6">Edit Data Penduduk</h2>
 
       <form action={formAction} className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -214,12 +214,12 @@ const CreateFormPenduduk = () => {
             <p className="mt-2 text-sm text-red-500">{state?.Error?.nama}</p>
           </div>
         <div className="md:col-span-2 flex justify-end mt-4">
-          <SubmitButton label= "Create" />
+          <SubmitButton label= "Edit" />
         </div>
       </form>
     </div>
   )
 }
 
-export default CreateFormPenduduk
+export default UpdateFormPenduduk
  

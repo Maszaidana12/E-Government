@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { SignInCredentials } from "lib/actions";
+import { SignInCredentials } from "@/app/(auth)/validation/actions";
 
 import { useActionState } from "react"; // pastikan ini udah ada
 

@@ -3,8 +3,8 @@ import Credentials from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./lib/prisma";
-import { LoginUserSchema } from "lib/zod";
 import bcrypt from "bcryptjs";
+import { LoginUserSchema } from "@/app/(auth)/validation/zod";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -20,7 +20,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       name: "Credentials",
       credentials: {
         nik: { label: "NIK", type: "text" },
-        password: { label: "Password", type: "password" },
+        password: { label: "password", type: "password" },
       },
       async authorize(credentials) {
         const parsed = LoginUserSchema.safeParse(credentials);
@@ -31,7 +31,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Cari user pakai NIK atau username
         const user = await prisma.users.findUnique({
           where: {nik},
-          include: { penduduk: true }, // include data profil jika perlu
+          include: { penduduk: { select: { nama: true } } }// include data profil jika perlu
         });
 
         if (!user) return null;
@@ -41,7 +41,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         return {
           id: user.id,
-          name: user.nama ?? user.penduduk?.nama ?? "User",
+          name: user.nama ,
           role: user.peran,
           username:user.nik
         };
