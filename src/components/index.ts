@@ -1,10 +1,11 @@
 export * from './HeroSection';
 import LogoImage from '../../public/assets/e-government.png';
-import HeroImage from '../../public/assets/hero.jpg';
+import HeroImage from '../../public/assets/Herofoto.png';
 import LogoHero from '../../public/assets/logo-hero.png'
 import Card from '@/components/HeroSection/Card'
 import Main from '@/components/HeroSection/main';
 import TentangImage from '../../public/asset2/3A.png';
+
 
 import LoginPage from './auth/login/form-login';
 import { PasswordInput } from './auth/PasswordInput';

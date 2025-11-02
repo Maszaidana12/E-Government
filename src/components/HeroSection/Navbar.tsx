@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X } from "lucide-react"; // hamburger + close icon
+import { Menu, X } from "lucide-react";
 import { LogoImage } from "@/components";
 import Navlink from "@/components/HeroSection/NavLink";
 
@@ -12,17 +12,17 @@ const Navbar = () => {
 
   return (
     <div className="Navbar.Section">
-      {/* Welcome message tetap fixed */}
+      {/* Bar atas */}
       <div className="w-full h-12 bg-[#03467D] text-center flex items-center justify-center text-white font-outfit font-bold fixed top-0 left-0 z-50">
         Selamat Datang! di Website E-Government
       </div>
 
-      {/* Navbar dengan offset dari welcome message */}
-      <header className="w-full fixed flex flex-row top-12 bg-white shadow-md z-40">
+      {/* Navbar utama */}
+      <header className="w-full fixed top-12 bg-white shadow-md z-40">
         <section className="container mx-auto px-4 py-2">
-          <div className="navbar-box flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="logo flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <Link href="/">
                 <Image
                   src={LogoImage}
@@ -38,11 +38,11 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <div className=" md:flex sm:grid-cols-1  justify-center items">
+            <div className="hidden md:flex">
               <Navlink />
             </div>
 
-            {/* Mobile Hamburger */}
+            {/* Mobile Button */}
             <button
               onClick={() => setOpen(!open)}
               className="md:hidden p-2 rounded-lg hover:bg-slate-100"
@@ -51,10 +51,13 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Mobile Dropdown Menu */}
+          {/* Menu untuk mobile */}
           {open && (
-            <div className="md:hidden mt-2 bg-white rounded-lg shadow-lg p-4 space-y-3">
-              <Navlink />
+            <div
+              className="md:hidden mt-3 bg-white rounded-lg shadow-lg p-4
+                         grid grid-cols-2 gap-3 text-center transition-all"
+            >
+              <Navlink isMobile />
             </div>
           )}
         </section>

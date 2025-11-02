@@ -12,9 +12,9 @@ function mainmiddleware (request: NextRequest){
 }
 
 export default withAuth(mainmiddleware,
-    ['',
-     '',
-     's',
+    ['/dashboard',
+     '/akun/penduduk',
+     
 
     
     

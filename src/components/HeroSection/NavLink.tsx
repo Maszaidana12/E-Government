@@ -13,8 +13,6 @@ type NavItemProps = {
   iconClass?: string;
 };
 
-
-
 const NavItem = ({
   href = "#",
   label,
@@ -22,50 +20,46 @@ const NavItem = ({
   iconSize = "text-sm",
   iconClass = "text-gray-700",
 }: NavItemProps) => {
-  const navLinkClass = `
-    group block rounded-2xl flex items-center sm:grid sm: md:flex sm:items-center sm:justify-center gap-2 font-medium 
-    md:opacity-75 sm:hover:bg-blue-800 md:hover:bg-blue-800 px-5 py-2 md:rounded-full hover:text-white transition-all`.trim();
-    
   return (
     <li>
-      <Link href={href} className= {`flex items-center gap-2 px-3 py-2 rounded-lg text-sm xs:text-xs font-medium text-gray-700 hover:bg-blue-800 hover:text-white transition ${navLinkClass } `} >
-        {Icon && (
-          <Icon
-            className={`${iconSize} ${iconClass} w-4 h-4 xs:w-3 xs:h-3 transition-colors group-hover:text-white`}
-          />
+      <Link
+        href={href}
+        className={clsx(
+          "flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200",
+          "hover:bg-blue-800 hover:text-white text-gray-700"
         )}
-        <span className="transition-colors group-hover:text-white">{label}</span>
+      >
+        {Icon && <Icon className={`${iconSize} ${iconClass}`} />}
+        <span>{label}</span>
       </Link>
     </li>
   );
 };
 
-const NavLink = () => {
+const NavLink = ({ isMobile = false }: { isMobile?: boolean }) => {
   return (
-    <div className={clsx("lg:block lg:w-auto", {})}>
-      <ul
-        className={`lg:static lg:bg-transparent lg:flex-row lg:shadow-none
-          lg:text-black lg:p-0 lg:m-0 lg:w-auto lg:gap-3
-          fixed bottom-0 left-0 text-md sm:text-sm sm:text-center w-full flex flex-row justify-center items-center bg-white p-2 shadow-lg
-          lg:h-full font-bold text-black z-50  text-xs xs:text-sm`}
-      >
-        <NavItem href="/" label="Beranda" icon={IoIcons.IoHome} iconClass="text-blue-600" />
-        <NavItem href="/tentang" label="Tentang Kami" icon={IoIcons.IoInformationCircle} />
-        <NavItem href="/galeri" label="Galeri" icon={IoIcons.IoImages} />
-        <NavItem href="/kontak" label="Kontak" icon={IoIcons.IoCall} />
-        <NavItem href="#layanan" label="Layanan Kami" icon={IoIcons.IoConstruct} />
-
-        {/* Satu tombol login aja */}
-        <li>
-          <Link
-            href="/login"
-            className="block bg-blue-800 px-4 py-2 rounded-full text-xs xs:text-[10px] text-white text-center hover:bg-blue-600"
-          >
-            Login
-          </Link>
-        </li>
-      </ul>
-    </div>
+    <ul
+      className={clsx(
+        "font-bold",
+        isMobile
+          ? "grid grid-cols-2 gap-2"
+          : "flex items-center gap-3 text-sm md:text-base"
+      )}
+    >
+      <NavItem href="/" label="Beranda" icon={IoIcons.IoHome} iconClass="text-blue-600" />
+      <NavItem href="/tentang" label="Tentang Kami" icon={IoIcons.IoInformationCircle} />
+      <NavItem href="/galeri" label="Galeri" icon={IoIcons.IoImages} />
+      <NavItem href="/kontak" label="Kontak" icon={IoIcons.IoCall} />
+      <NavItem href="#layanan" label="Layanan Kami" icon={IoIcons.IoConstruct} />
+      <li>
+        <Link
+          href="/login"
+          className="block bg-blue-800 px-4 py-2 rounded-full text-white text-center hover:bg-blue-600"
+        >
+          Login
+        </Link>
+      </li>
+    </ul>
   );
 };
 
