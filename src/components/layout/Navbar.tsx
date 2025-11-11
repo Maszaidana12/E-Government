@@ -123,7 +123,7 @@ const Navbar =({ isCollapsed, setIsCollapsed, session }: NavbarProps) => {
                   alt="Foto"
                   width={36}
                   height={36}
-                  className="w-9 h-9 rounded-full cursor-pointer"
+                  className="w-9 h-9 rounded-full"
                 />
               </button>
             </div>

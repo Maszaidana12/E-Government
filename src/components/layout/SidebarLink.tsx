@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { IconType } from "react-icons";
+import { useSession } from "next-auth/react";
 import {
   IoSpeedometer,
   IoPerson,
@@ -14,12 +15,14 @@ import {
   IoChevronForward,
 } from "react-icons/io5";
 
+
 type Item = {
   id: string;
   href?: string;
   label: string;
   Icon: IconType;
   children?: Item[];
+  roles? :string[];
 };
 
 const items: Item[] = [
@@ -28,6 +31,7 @@ const items: Item[] = [
     id: "penduduk",
     label: "Penduduk",
     Icon: IoPeople,
+    roles: ["RT"],
     children: [
       { id: "data-penduduk", href: "/akun/penduduk", label: "Data Penduduk", Icon: IoPeople },
       { id: "data-user", href: "/user", label: "Data User", Icon: IoPerson },
@@ -37,9 +41,10 @@ const items: Item[] = [
     id: "administrasi",
     label: "Administrasi",
     Icon: IoBriefcase,
+    roles: ["RT", "Warga"],
     children: [
-      { id: "permohonan", href: "/permohonan", label: "Permohonan", Icon: IoDocumentText },
-      { id: "pengajuan", href: "/pengajuan", label: "Pengajuan", Icon: IoDocumentText },
+      { id: "permohonan", href: "/permohonan", label: "Permohonan", Icon: IoDocumentText , roles:["Warga"]},
+      { id: "pengajuan", href: "/pengajuan", label: "Pengajuan", Icon: IoDocumentText , roles:["RT"]},
     ],
   },
   { id: "keuangan", href: "/keuangan", label: "Keuangan", Icon: IoWallet },
@@ -53,14 +58,31 @@ export default function SidebarLink({
   onNavigate?: () => void;
 }) {
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-
+  const {data:session} = useSession();
+  const role = session?.user?.role || "Warga"
   const toggleMenu = (id: string) => {
     setOpenMenus((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const filteredItems = items.map((it)=>{
+    if(it.children) {
+      const filteredChildren = it.children.filter(
+        (child) => !child.roles || child.roles.includes(role)
+      );
+      return { ...it, children: filteredChildren};
+    }
+    return it;
+  })
+
+  .filter((it)=>{
+    if(it.roles && !it.roles.includes(role)) return false;
+    if(it.children && it.children.length === 0) return false;
+    return true;
+  })
+
   return (
     <ul className="flex flex-col gap-1 px-2">
-      {items.map((it) => {
+      {filteredItems.map((it) => {
         const isOpen = openMenus[it.id];
         const hasChildren = it.children && it.children.length > 0;
 

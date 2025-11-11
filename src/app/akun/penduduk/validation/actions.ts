@@ -4,7 +4,7 @@ import {prisma} from "../../../../../lib/prisma"
 import { PendudukSchema } from "./validation";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-
+import bcrypt from "bcryptjs";
 
 
 export const DataPendudukCreate = async (prevState: unknown ,formData:FormData) => {
@@ -16,7 +16,7 @@ export const DataPendudukCreate = async (prevState: unknown ,formData:FormData) 
     }
     const tanggalLahir = new Date (validasi.data.tanggal_lahir)
     try{
-        await prisma.penduduk.create({
+       const penduduk =  await prisma.penduduk.create({
         data:{
               nik: validasi.data.nik,
               nama: validasi.data.nama,
@@ -35,6 +35,33 @@ export const DataPendudukCreate = async (prevState: unknown ,formData:FormData) 
 
         }
     })
+    
+    const hashedPassword = await bcrypt.hash(penduduk.nik, 10); // password awal = NIK
+    const user = await prisma.users.create({
+      data: {
+        nik: penduduk.nik,
+        nama: penduduk.nama,
+        peran: "Warga", // default role
+        password: hashedPassword,
+      },
+    });
+
+    await prisma.account.create({
+      data: {
+        userId: user.id,
+        type: "credentials",
+        provider: "credentials",
+        providerAccountId: user.id,
+      },
+    });
+    await prisma.sesi.create({
+      data: {
+        token_sesi: "auto_create_" + user.id,
+        penggunaId: user.id,
+        kadaluarsa: new Date(Date.now() + 1000 * 60 * 60 * 24), // 1 hari
+      },
+    });
+
     } catch(error){
         console.error("Error create penduduk:", error);
         return {message: "Gagal menambahkan Data Penduduk"}

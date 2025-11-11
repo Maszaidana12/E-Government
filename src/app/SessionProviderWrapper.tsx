@@ -1,11 +1,13 @@
-"use client";
+
+import { auth } from "auth";
 
 import { SessionProvider } from "next-auth/react";
 
-export default function SessionProviderWrapper({
+export default async function SessionProviderWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <SessionProvider>{children}</SessionProvider>;
+  const session = await auth();
+  return <SessionProvider session={session}>{children}</SessionProvider>;
 }

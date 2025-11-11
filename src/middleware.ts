@@ -1,6 +1,6 @@
 import withAuth from "@/middlewares/withAuth";
 import { NextResponse } from "next/server";
-import type { NextRequest }from 'next/server.js';
+import type { NextRequest }from 'next/server';
 
 function mainmiddleware (request: NextRequest){
     
@@ -14,10 +14,5 @@ function mainmiddleware (request: NextRequest){
 export default withAuth(mainmiddleware,
     ['/dashboard',
      '/akun/penduduk',
-     
 
-    
-    
-    
-    
     ]);

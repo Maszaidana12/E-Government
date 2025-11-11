@@ -16,6 +16,7 @@ interface SidebarProps {
 export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
   const [openMobile, setOpenMobile] = useState(false);
 
+
   return (
     <>
       {/* Toggle (Mobile Only) */}

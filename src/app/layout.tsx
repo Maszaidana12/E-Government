@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+
 import SessionProviderWrapper from "./SessionProviderWrapper";
 
 const outfit = Outfit({
@@ -13,16 +14,20 @@ export const metadata: Metadata = {
   description: "Aplikasi Website Masyarakat",
 };
 
-export default function RootLayout({
+export default  function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  
   return (
     <html lang="en">
       <body className={`${outfit.variable} antialiased`}>
         <main className="bg-white min-h-screen">
-           <SessionProviderWrapper> {children}</SessionProviderWrapper>
+           <SessionProviderWrapper>  
+            {children}
+            
+            </SessionProviderWrapper>
           </main>
       </body>
     </html>
