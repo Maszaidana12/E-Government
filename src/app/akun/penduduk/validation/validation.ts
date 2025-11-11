@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const JenisKelaminEnum = z.enum(["laki_laki", "perempuan"]);
-export const AgamaEnum = z.enum(["Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Konghucu"]);
+export const AgamaEnum = z.enum(["Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Konghucu", "Kepercayaan"]);
 export const PendidikanEnum = z.enum(["Tidak_Sekolah", "SD", "SMP", "SMA", "Diploma", "S1", "S2", "S3"]);
 export const GolDarahEnum = z.enum(["A", "B", "AB", "O", "Tidak_Tahu"]);
 export const StatusPerkawinanEnum = z.enum(["Belum_Kawin", "Kawin", "Cerai_Hidup", "Cerai_Mati"]);
@@ -24,4 +24,8 @@ export const PendudukSchema = z.object({
   no_kk: z.string().optional(),
 });
 
-export type PendudukFormData = z.infer<typeof PendudukSchema>;
+export const PendudukUpdateSchema = PendudukSchema.extend({
+  id_penduduk: z.number(),
+});
+
+export type PendudukUpdateInput = z.infer<typeof PendudukUpdateSchema>;

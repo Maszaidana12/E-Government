@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { IconType } from "react-icons";
 import {
@@ -9,21 +10,38 @@ import {
   IoPeople,
   IoBriefcase,
   IoWallet,
+  IoChevronDown,
+  IoChevronForward,
 } from "react-icons/io5";
 
 type Item = {
   id: string;
-  href: string;
+  href?: string;
   label: string;
   Icon: IconType;
+  children?: Item[];
 };
 
 const items: Item[] = [
-  { id: "dash", href: "/dashboard", label: "Dashboard", Icon: IoSpeedometer },
-  { id: "user", href: "/user", label: "User", Icon: IoPerson },
-  { id: "permohonan", href: "/permohonan", label: "Permohonan & Pengajuan", Icon: IoDocumentText },
-  { id: "penduduk", href: "/penduduk", label: "Penduduk", Icon: IoPeople },
-  { id: "administrasi", href: "/administrasi", label: "Administrasi", Icon: IoBriefcase },
+  { id: "dashboard", href: "/dashboard", label: "Dashboard", Icon: IoSpeedometer },
+  {
+    id: "penduduk",
+    label: "Penduduk",
+    Icon: IoPeople,
+    children: [
+      { id: "data-penduduk", href: "/akun/penduduk", label: "Data Penduduk", Icon: IoPeople },
+      { id: "data-user", href: "/user", label: "Data User", Icon: IoPerson },
+    ],
+  },
+  {
+    id: "administrasi",
+    label: "Administrasi",
+    Icon: IoBriefcase,
+    children: [
+      { id: "permohonan", href: "/permohonan", label: "Permohonan", Icon: IoDocumentText },
+      { id: "pengajuan", href: "/pengajuan", label: "Pengajuan", Icon: IoDocumentText },
+    ],
+  },
   { id: "keuangan", href: "/keuangan", label: "Keuangan", Icon: IoWallet },
 ];
 
@@ -34,46 +52,68 @@ export default function SidebarLink({
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
-  return (
-    <ul className="flex flex-col justify-center gap-2">
-      {items.map((it) => (
-        <li
-          key={it.id}
-          className="border-b border-slate-200 dark:border-slate-800 last:border-none"
-        >
-          <Link
-            href={it.href}
-            onClick={onNavigate}
-            title={collapsed ? it.label : undefined}
-            className={`
-              flex items-center gap-3 px-4 py-2 
-             text-white 
-            hover:bg-indigo-500 dark:hover:bg-indigo-400 
-            transition-colors
-            `}
-          >
-            {/* Icon */}
-            <div
-              className={`
-                min-w-[36px] flex items-center justify-center text-lg rounded-md text-indigo-200 group-hover:text-white transition-all
-              `}
-            >
-              <it.Icon className="w-5 h-5" />
-            </div>
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
-            {/* Label */}
-            <span
+  const toggleMenu = (id: string) => {
+    setOpenMenus((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  return (
+    <ul className="flex flex-col gap-1 px-2">
+      {items.map((it) => {
+        const isOpen = openMenus[it.id];
+        const hasChildren = it.children && it.children.length > 0;
+
+        return (
+          <li key={it.id}>
+            {/* Menu utama */}
+            <button
+              onClick={() =>
+                hasChildren ? toggleMenu(it.id) : onNavigate?.()
+              }
               className={`
-                 font-medium transition-opacity duration-200
-                whitespace-normal break-words leading-snug ${collapsed ? 
-                "opacity-0 pointer-events-none" : "opacity-100"}
+                flex items-center gap-3 px-3 py-2 rounded-xl w-full
+                text-slate-100 hover:text-white
+                hover:bg-white/10 transition-all duration-200 cursor-pointer
+                ${collapsed ? "justify-center" : "justify-between"}
               `}
             >
-              {it.label}
-            </span>
-          </Link>
-        </li>
-      ))}
+              <div className="flex items-center gap-3">
+                <it.Icon className="w-5 h-5 text-indigo-200 group-hover:text-white" />
+                {!collapsed && <span className="font-medium">{it.label}</span>}
+              </div>
+
+              {!collapsed && hasChildren && (
+                <span className="text-indigo-200">
+                  {isOpen ? (
+                    <IoChevronDown className="w-4 h-4" />
+                  ) : (
+                    <IoChevronForward className="w-4 h-4" />
+                  )}
+                </span>
+              )}
+            </button>
+
+            {/* Submenu */}
+            {hasChildren && isOpen && !collapsed && (
+              <ul className="mt-1 ml-6 flex flex-col gap-1 border-l border-white/10 pl-3">
+                {it.children?.map((child) => (
+                  <li key={child.id}>
+                    <Link
+                      href={child.href || "#"}
+                      onClick={onNavigate}
+                      className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm text-indigo-100 hover:bg-white/10 transition-colors"
+                    >
+                      <child.Icon className="w-4 h-4 text-indigo-200" />
+                      <span>{child.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }

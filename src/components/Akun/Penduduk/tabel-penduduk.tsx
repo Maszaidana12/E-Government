@@ -55,7 +55,7 @@ const TabelPenduduk = async() => {
                  {col.key === "actions" ? (
                 <div className="items-center">
                     <EditButton id={data.id_penduduk}/>
-                    <DeleteButton />
+                    <DeleteButton  id={data.id_penduduk} />
                 </div>
                 ) : col.key === "tanggal_lahir" ? (
                   new Date(data.tanggal_lahir).toLocaleDateString("id-ID")

@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { IoAddSharp, IoPencil, IoTrashOutline } from 'react-icons/io5'
 import { useFormStatus } from 'react-dom';
 import clsx from 'clsx';
+import { DeletePenduduk } from '@/app/akun/penduduk/validation/actions';
+
+
 
 export const CreateButton = () =>{
     return (
@@ -27,10 +30,18 @@ export const EditButton = ({id}:{id:number}) =>{
     );
 };
 
-export const DeleteButton = () =>{
+export const DeleteButton = ({id}:{id:number}) =>{
     return (
        <Link href = "/akun/penduduk/" className='inline-flex items-center p-1 hover:bg-gray-100
-       px-5[9px] rounded-sm text-sm border-2'>
+       px-5[9px] rounded-sm text-sm border-2'
+       onClick={async()=>{
+        if(confirm('Yakin ingin menghapus')){
+            await DeletePenduduk(id);
+            window.location.reload();
+        }
+       }}
+       >
+
       <IoTrashOutline size={20} />
       Hapus
        </Link>
