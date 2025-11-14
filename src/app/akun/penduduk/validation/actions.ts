@@ -5,7 +5,7 @@ import { PendudukSchema } from "./validation";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
-
+import { NextResponse } from "next/server";
 
 export const DataPendudukCreate = async (prevState: unknown ,formData:FormData) => {
     const validasi = PendudukSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -111,3 +111,14 @@ export async function DeletePenduduk (id:number){
     });
 }
 
+export async function DeleteUsers (id:string){
+    await prisma.users.delete({
+        where:{id},
+    });
+}
+
+
+export async function JumlahDataPenduduk() {
+  const totalPenduduk = await prisma.penduduk.count();
+  return NextResponse.json({ totalPenduduk });
+}

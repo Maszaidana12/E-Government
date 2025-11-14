@@ -1,19 +1,21 @@
-
-import { DataUsers } from "lib/data";
-import { EditUsersButton, DeleteUsersButton } from '../buttons';
+import { DataKeluarga } from "lib/data";
+import { EditButton, DeleteButton } from '../buttons';
 
 const kolom = [
-  { label: "NIK", key: "nik" },
-  { label: "Nama", key: "nama" },
-  { label: "Peran", key: "peran" },
-  { label: "Password", key: "password" },
-  { label: "Images", key: "images" },
-  { label: "Waktu Pembuatan", key: "createdAt" },
+  { label: "ID", key: "id_kk" },
+  { label: "No KK", key: "no_kk" },
+  { label: "Alamat", key: "alamat" },
+  { label: "Nomor RT", key: "Nomor RT" },
+  { label: "Kode Pos", key: "tempat_lahir" },
+  { label: "Desa/Kelurahan", key: "tanggal_lahir" },
+  { label: "Kecamatan", key: "agama" },
+  { label: "Kabupaten", key: "pendidikan" },
+  { label: "Provinsi", key: "pekerjaan" },
   { label: "Pengaturan", key: "actions" },
 ] as const;
 
-const TabelUsers = async() => {
-  const data = await DataUsers();
+const TabelDataKeluarga = async() => {
+  const data = await DataKeluarga();
   
   return (
     <div className="w-full h-full">
@@ -35,7 +37,7 @@ const TabelUsers = async() => {
         
           {data.map((data, idx: number) => (
             <tr 
-            key = {data.id|| idx} 
+            key = {data.id_kk || idx} 
             className="bg-white border-b"
             >
               {kolom.map((col,i)=>(
@@ -47,9 +49,10 @@ const TabelUsers = async() => {
                 >
                  {col.key === "actions" ? (
                 <div className="items-center">
-                    <EditUsersButton id={data.id}/>
-                    <DeleteUsersButton id={data.id} />
+                    <EditButton id={data.id_kk}/>
+                    <DeleteButton  id={data.id_kk} />
                 </div>
+                
                 ) : (
                 String(data[col.key as keyof typeof data] ?? "")
                 )}         
@@ -66,4 +69,4 @@ const TabelUsers = async() => {
   )
 }
 
-export default TabelUsers
+export default TabelDataKeluarga

@@ -49,7 +49,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           className={`
             h-full flex flex-col 
             bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700 
-            text-white shadow-xl rounded-r-xl
+            text-white shadow-xl 
             transition-all duration-300
           `}
         >

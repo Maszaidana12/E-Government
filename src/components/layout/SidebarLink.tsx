@@ -13,6 +13,7 @@ import {
   IoWallet,
   IoChevronDown,
   IoChevronForward,
+  IoInformationCircle
 } from "react-icons/io5";
 
 
@@ -34,7 +35,8 @@ const items: Item[] = [
     roles: ["RT"],
     children: [
       { id: "data-penduduk", href: "/akun/penduduk", label: "Data Penduduk", Icon: IoPeople },
-      { id: "data-user", href: "/user", label: "Data User", Icon: IoPerson },
+      { id: "data-user", href: "/akun/user", label: "Data User", Icon: IoPerson },
+      { id: "data-Keluarga", href: "/akun/datakeluarga", label: "Data Keluarga", Icon: IoPeople  },
     ],
   },
   {
@@ -44,10 +46,11 @@ const items: Item[] = [
     roles: ["RT", "Warga"],
     children: [
       { id: "permohonan", href: "/permohonan", label: "Permohonan", Icon: IoDocumentText , roles:["Warga"]},
-      { id: "pengajuan", href: "/pengajuan", label: "Pengajuan", Icon: IoDocumentText , roles:["RT"]},
+      { id: "pengajuan", href: "/pengajuan", label: "Rekap Pengajuan", Icon: IoDocumentText , roles:["RT"]},
     ],
   },
   { id: "keuangan", href: "/keuangan", label: "Keuangan", Icon: IoWallet },
+  {id: "informasi-rt" ,href: "/informasi", label: "Informasi RT", Icon: IoInformationCircle}
 ];
 
 export default function SidebarLink({

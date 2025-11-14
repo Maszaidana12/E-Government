@@ -1,25 +1,25 @@
 "use client";
 
+
 import { useNavbar } from "@/app/context/NavbarContext"
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const PendudukClient = () => {
+
+const UsersClient = () => {
     const {setConfig} = useNavbar ();
     const router = useRouter();
 
     useEffect(()=>{
         setConfig({
-            title:"Data Penduduk", 
+            title:"Data User", 
             showAdd:true, 
             showSearch:true,
-            onAdd : () => router.push("/akun/penduduk/create")
+            onAdd : () => router.push("/akun/users/create")
         });
     }, [setConfig, router]);
 
     return null;
 }
 
-export default PendudukClient
-
-
+export default UsersClient

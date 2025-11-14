@@ -4,22 +4,22 @@ import { useNavbar } from "@/app/context/NavbarContext"
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const PendudukClient = () => {
+const KeluargaClient = () => {
     const {setConfig} = useNavbar ();
     const router = useRouter();
 
     useEffect(()=>{
         setConfig({
-            title:"Data Penduduk", 
+            title:"Data Keluarga", 
             showAdd:true, 
             showSearch:true,
-            onAdd : () => router.push("/akun/penduduk/create")
+            onAdd : () => router.push("/akun/keluarga/create")
         });
     }, [setConfig, router]);
 
     return null;
 }
 
-export default PendudukClient
+export default KeluargaClient
 
 

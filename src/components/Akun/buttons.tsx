@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { IoAddSharp, IoPencil, IoTrashOutline } from 'react-icons/io5'
 import { useFormStatus } from 'react-dom';
 import clsx from 'clsx';
-import { DeletePenduduk } from '@/app/akun/penduduk/validation/actions';
+import { DeletePenduduk, DeleteUsers } from '@/app/akun/penduduk/validation/actions';
 
 
 
@@ -71,3 +71,34 @@ export const SubmitButton = ({label}:{label:string}) =>{
     )
 
 }
+
+
+
+export const EditUsersButton = ({id}:{id:string}) =>{
+    return (
+       
+       <Link href ={`/akun/penduduk/edit/${id}`} className='inline-flex items-center p-1 hover:bg-gray-100 border-2 mr-0.5
+       px-5[9px] rounded-sm text-sm'>
+      <IoPencil size={20} />
+      Edit
+       </Link>
+    );
+};
+
+export const DeleteUsersButton = ({id}:{id:string}) =>{
+    return (
+       <Link href = "/akun/penduduk/" className='inline-flex items-center p-1 hover:bg-gray-100
+       px-5[9px] rounded-sm text-sm border-2'
+       onClick={async()=>{
+        if(confirm('Yakin ingin menghapus')){
+            await DeleteUsers(id);
+            window.location.reload();
+        }
+       }}
+       >
+
+      <IoTrashOutline size={20} />
+      Hapus
+       </Link>
+    );
+};
