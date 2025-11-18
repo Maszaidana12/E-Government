@@ -5,7 +5,7 @@ export const AgamaEnum = z.enum(["Islam", "Kristen", "Katolik", "Hindu", "Buddha
 export const PendidikanEnum = z.enum(["Tidak_Sekolah", "SD", "SMP", "SMA", "Diploma", "S1", "S2", "S3"]);
 export const GolDarahEnum = z.enum(["A", "B", "AB", "O", "Tidak_Tahu"]);
 export const StatusPerkawinanEnum = z.enum(["Belum_Kawin", "Kawin", "Cerai_Hidup", "Cerai_Mati"]);
-export const KewarganegaraanEnum = z.enum(["WNI", "WNA"]);
+export const KewarganegaraanEnum= z.enum(["WNI", "WNA"]);
 export const StatusHubunganEnum = z.enum(["Kepala_Keluarga", "Istri", "Anak", "Orang_Tua", "Lainnya"]);
 
 export const PendudukSchema = z.object({

@@ -106,6 +106,8 @@ model SuratPengajuan {
   status              suratpengajuan_status? @default(Diajukan)
   fileuploads         FileUploads[]
   penduduk            Penduduk?          @relation(fields: [nik], references: [nik], map: "SuratPengajuan_nik_fkey")
+  hasil_surat         String? // path file PDF / output surat
+  catatan_rt          String?
 
   id_permohonan       Int?
   permohonan          Permohonan?        @relation("PermohonanSurat", fields: [id_permohonan], references: [id_permohonan])
@@ -143,15 +145,22 @@ model Penduduk {
 model Permohonan {
   id_permohonan       Int                @id @default(autoincrement())
   nik                 String             @db.VarChar(16)
-  tujuan              String
-  status              String
+  jenis_permohonan    String
+
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
 
   penduduk            Penduduk           @relation(fields: [nik], references: [nik], onDelete: Cascade, map: "Permohonan_nik_fkey")
   riwayat             Riwayat[]
+  catatan_rt          String?
+  hasil_surat         String?
+  keterangan          String?
+
+  status              permohonan_status   @default(PENDING)
 
   surat               SuratPengajuan[]   @relation("PermohonanSurat") // satu Permohonan punya banyak Surat
+  fileUploads         FileUploads[]
+
 
   @@index([nik], map: "Permohonan_nik_index")
 
@@ -183,6 +192,8 @@ model FileUploads {
   rt             RT?                    @relation(fields: [id_rt], references: [id_rt], map: "FileUploads_id_rt_fkey")
   suratpengajuan SuratPengajuan?        @relation(fields: [id_surat], references: [id_surat], map: "FileUploads_id_surat_fkey")
   penduduk       Penduduk?              @relation(fields: [nik], references: [nik], map: "FileUploads_nik_fkey")
+  id_permohonan  Int?
+  permohonan     Permohonan? @relation(fields: [id_permohonan], references: [id_permohonan])
 
   @@index([id_rt], map: "FileUploads_id_rt_fkey")
   @@index([id_surat], map: "FileUploads_id_surat_fkey")
@@ -194,12 +205,22 @@ model FileUploads {
 // ENUMS
 // ======================
 
+
+enum permohonan_status {
+  PENDING
+  DISETUJUI
+  DITOLAK
+  DIPROSES
+}
+
+
 enum suratpengajuan_jenis_surat {
   Surat_Pengantar
   Surat_Domisili
-  Surat_Keterangan
-  Surat_Usaha
+  Surat_Keterangan_RTRW
+  Surat_Keterangan_Usaha
   Surat_Pembuatan_KTP
+  Surat_Keterangan_Tidak_Mampu
 }
 
 enum fileuploads_jenis_file {
