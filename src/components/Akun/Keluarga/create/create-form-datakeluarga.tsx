@@ -75,7 +75,7 @@ const CreateFormDataKeluarga = () => {
             type="text"
             id="desa_kelurahan"
             name="desa_kelurahan"
-            placeholder="Masukkan Nama..."
+            placeholder="Masukkan Desa/Kelurahan..."
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           />
           <div id = "desa_kelurahan-error" aria-live = "polite" aria-atomic = "true">
@@ -89,7 +89,7 @@ const CreateFormDataKeluarga = () => {
             type="text"
             id="kecamatan"
             name="kecamatan"
-            placeholder="Masukkan Nama..."
+            placeholder="Masukkan Kecamatan..."
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           />
           <div id = "kecamatan-error" aria-live = "polite" aria-atomic = "true">
@@ -103,7 +103,7 @@ const CreateFormDataKeluarga = () => {
             type="text"
             id="kabupaten_kota"
             name="kabupaten_kota"
-            placeholder="Masukkan Nama..."
+            placeholder="Masukkan Kabupaten/Kota..."
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           />
           <div id = "kabupaten_kota-error" aria-live = "polite" aria-atomic = "true">
@@ -117,7 +117,7 @@ const CreateFormDataKeluarga = () => {
             type="text"
             id="provinsi"
             name="provinsi"
-            placeholder="Masukkan Nama..."
+            placeholder="Masukkan Provinsi..."
             className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
           />
           <div id = "provinsi-error" aria-live = "polite" aria-atomic = "true">
