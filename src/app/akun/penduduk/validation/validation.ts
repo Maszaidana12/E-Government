@@ -28,4 +28,17 @@ export const PendudukUpdateSchema = PendudukSchema.extend({
   id_penduduk: z.number(),
 });
 
+export const KeluargaSchema = z.object ({
+  no_kk:        z.string().min(16, "No KK minimal harus 16 Karakter").max(16, "No KK maksimal 16 Karakter")  , 
+  alamat :      z.string().min(10, "Alamat harus memiliki minimal 10 Karakter"),     
+  nomor_rt :    z.string().min(3, "Nomor RT harus memiliki minimal 3 karakter"),
+  kode_pos :    z.string(),
+  desa_kelurahan :  z.string(),
+  kecamatan :       z.string (),
+  kabupaten_kota :   z.string(),
+  provinsi   :       z.string(),
+
+
+})
+
 export type PendudukUpdateInput = z.infer<typeof PendudukUpdateSchema>;

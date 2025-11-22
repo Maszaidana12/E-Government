@@ -180,6 +180,15 @@ model Riwayat {
 }
 
 
+model Notifikasi {
+  id_notifikasi  Int @id @default(autoincrement())
+  title          String
+  message        String 
+  type           String // "permohonan" | "lainnya"
+  createdAt      DateTime @default(now())
+} 
+
+
 model FileUploads {
   id             Int                    @id @default(autoincrement())
   id_surat       Int

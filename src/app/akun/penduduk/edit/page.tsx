@@ -6,15 +6,22 @@ const UpdateDataPenduduk = async({params}: {params:{id:number}}) => {
   const id = params.id;
   const data = await DataPendudukById(id);
 
-  if(!data){
+  if (!data) {
     notFound();
   }
+
   return (
     <div className="max-w-screen mx-auto mt-5">
       <h1 className="text-2xl text-center mb-2"></h1>
-      <UpdateFormPenduduk data={data} />
+       <UpdateFormPenduduk
+        penduduk={{
+          ...data,
+          tanggal_lahir: data.tanggal_lahir.toISOString().slice(0, 10),
+          no_kk: data.no_kk ?? undefined,
+        }}
+      />
     </div>
   )
 }
 
-export default UpdateDataPenduduk
+export default UpdateDataPenduduk;

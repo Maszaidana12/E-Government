@@ -3,10 +3,17 @@
 import { prisma } from "lib/prisma";
 import { PermohonanSchema, PermohonanInput } from './validation';
 import { revalidatePath } from "next/cache";
-
+import { sendNotifToRT } from "./sendNotifToRT";
+import { auth } from "auth";
 
 export async function createPermohonan(prevState:unknown, formData:FormData){
 try{
+
+   const session = await auth();
+
+   if(!session || !session.user?.username){
+      return {error:{general: "User tidak terautentikasi"}}
+   }
 
     const rawData : PermohonanInput = {
         nik: formData.get("nik")?.toString() || "",
@@ -26,7 +33,7 @@ try{
         return {error:{nik:["NIK Tidak Ditemukan"]}};
      }
 
-     const permohonan = await prisma.permohonan.create ({
+     await prisma.permohonan.create ({
         data: {
             nik: validated.data.nik,
             jenis_permohonan:validated.data.jenis_permohonan,

@@ -1,7 +1,7 @@
 "use server";
 
 import {prisma} from "../../../../../lib/prisma"
-import { PendudukSchema } from "./validation";
+import { PendudukSchema, KeluargaSchema } from "./validation";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
@@ -111,6 +111,7 @@ export async function DeletePenduduk (id:number){
     });
 }
 
+
 export async function DeleteUsers (id:string){
     await prisma.users.delete({
         where:{id},
@@ -121,4 +122,52 @@ export async function DeleteUsers (id:string){
 export async function JumlahDataPenduduk() {
   const totalPenduduk = await prisma.penduduk.count();
   return NextResponse.json({ totalPenduduk });
+}
+
+
+export async function DeleteKK (id:number){
+    await prisma.kK.delete({
+        where:{id_kk:id},
+    });
+}
+
+
+
+export const DataKeluargaCreate = async (prevstate:unknown, formData:FormData) => {
+  const validasi = KeluargaSchema.safeParse(Object.fromEntries(formData.entries()));
+  if(!validasi.success){
+    return {
+      Error:validasi.error.flatten().fieldErrors
+    }
+  }
+   try {
+      await prisma.kK.create({
+        data:{
+          no_kk: validasi.data.no_kk,
+          alamat: validasi.data.alamat,
+          nomor_rt:validasi.data.nomor_rt,
+          kode_pos:validasi.data.kode_pos,
+          desa_kelurahan:validasi.data.desa_kelurahan,
+          kecamatan:validasi.data.kecamatan,
+          kabupaten_kota:validasi.data.kabupaten_kota,
+          provinsi:validasi.data.provinsi,
+          
+
+        }
+      });
+     }  catch(error){
+        console.error("Error create Data Keluarga:", error);
+        return {message: "Gagal menambahkan Data keluarga"}
+     }
+      revalidatePath("/akun/datakeluarga");
+      redirect("/akun/datakeluarga");
+  } ;
+
+  export async function GetAnggotaKK(noKK: string) {
+  const anggota = await prisma.penduduk.findMany({
+    where: { no_kk: noKK },
+    orderBy: { status_hubungan: "asc" }, // Kepala keluarga → Istri → Anak
+  });
+
+  return anggota;
 }

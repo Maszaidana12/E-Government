@@ -1,12 +1,12 @@
-import React from 'react'
-import SKTM from "./components/SKTM";
+import { CreateFormPermohonan } from "@/components/Administrasi/Permohonan/create-form-permohonan"
 
-const page = () => {
+const CreatePermohonan = () => {
   return (
-    <div>
-       return <SKTM />;
+    <div className="max-w-screen mx-auto mt-5">
+      <h1 className="text-2xl text-center mb-2"></h1>
+      <CreateFormPermohonan />
     </div>
   )
 }
 
-export default page
+export default CreatePermohonan

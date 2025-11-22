@@ -1,16 +1,16 @@
 import { DataKeluarga } from "lib/data";
-import { EditButton, DeleteButton } from '../buttons';
+import { EditKeluargaButton, DeleteKeluargaButton } from '../buttons';
 
 const kolom = [
   { label: "ID", key: "id_kk" },
   { label: "No KK", key: "no_kk" },
   { label: "Alamat", key: "alamat" },
-  { label: "Nomor RT", key: "Nomor RT" },
-  { label: "Kode Pos", key: "tempat_lahir" },
-  { label: "Desa/Kelurahan", key: "tanggal_lahir" },
-  { label: "Kecamatan", key: "agama" },
-  { label: "Kabupaten", key: "pendidikan" },
-  { label: "Provinsi", key: "pekerjaan" },
+  { label: "Nomor RT", key: "nomor_rt" },
+  { label: "Kode Pos", key: "kode_pos" },
+  { label: "Desa/Kelurahan", key: "desa_kelurahan" },
+  { label: "Kecamatan", key: "kecamatan" },
+  { label: "Kabupaten", key: "kabupaten_kota" },
+  { label: "Provinsi", key: "provinsi" },
   { label: "Pengaturan", key: "actions" },
 ] as const;
 
@@ -49,8 +49,8 @@ const TabelDataKeluarga = async() => {
                 >
                  {col.key === "actions" ? (
                 <div className="items-center">
-                    <EditButton id={data.id_kk}/>
-                    <DeleteButton  id={data.id_kk} />
+                    <EditKeluargaButton id={data.id_kk}/>
+                    <DeleteKeluargaButton  id={data.id_kk} />
                 </div>
                 
                 ) : (

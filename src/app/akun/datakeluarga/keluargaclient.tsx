@@ -13,7 +13,7 @@ const KeluargaClient = () => {
             title:"Data Keluarga", 
             showAdd:true, 
             showSearch:true,
-            onAdd : () => router.push("/akun/keluarga/create")
+            onAdd : () => router.push("/akun/datakeluarga/create")
         });
     }, [setConfig, router]);
 

@@ -45,7 +45,7 @@ const items: Item[] = [
     Icon: IoBriefcase,
     roles: ["RT", "Warga"],
     children: [
-      { id: "permohonan", href: "/permohonan", label: "Permohonan", Icon: IoDocumentText , roles:["Warga"]},
+      { id: "permohonan", href: "/administrasi/permohonan", label: "Permohonan", Icon: IoDocumentText , roles:["Warga"]},
       { id: "pengajuan", href: "/pengajuan", label: "Rekap Pengajuan", Icon: IoDocumentText , roles:["RT"]},
     ],
   },
