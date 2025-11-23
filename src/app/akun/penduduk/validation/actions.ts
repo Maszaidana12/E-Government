@@ -1,11 +1,17 @@
 "use server";
 
 import {prisma} from "../../../../../lib/prisma"
-import { PendudukSchema, KeluargaSchema } from "./validation";
+import { PendudukSchema, 
+         KeluargaSchema, 
+         KeluargaInput,
+         RTSchema,
+         RTInput,
+      } from "./validation";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { auth } from "auth";
 
 export const DataPendudukCreate = async (prevState: unknown ,formData:FormData) => {
     const validasi = PendudukSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -124,14 +130,12 @@ export async function JumlahDataPenduduk() {
   return NextResponse.json({ totalPenduduk });
 }
 
-
-export async function DeleteKK (id:number){
-    await prisma.kK.delete({
-        where:{id_kk:id},
-    });
-}
+{/* Data RT */}
 
 
+
+
+{/* Data Keluarga */}
 
 export const DataKeluargaCreate = async (prevstate:unknown, formData:FormData) => {
   const validasi = KeluargaSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -140,21 +144,25 @@ export const DataKeluargaCreate = async (prevstate:unknown, formData:FormData) =
       Error:validasi.error.flatten().fieldErrors
     }
   }
+   const data: KeluargaInput = validasi.data;
    try {
       await prisma.kK.create({
         data:{
           no_kk: validasi.data.no_kk,
           alamat: validasi.data.alamat,
           nomor_rt:validasi.data.nomor_rt,
-          kode_pos:validasi.data.kode_pos,
-          desa_kelurahan:validasi.data.desa_kelurahan,
-          kecamatan:validasi.data.kecamatan,
-          kabupaten_kota:validasi.data.kabupaten_kota,
-          provinsi:validasi.data.provinsi,
-          
-
         }
       });
+
+      const anggota = data.anggota;
+    for (const a of anggota) {
+      await prisma.penduduk.updateMany({
+        where: { nik: a.nik },
+        data: { no_kk: data.no_kk },
+      });
+    }
+
+
      }  catch(error){
         console.error("Error create Data Keluarga:", error);
         return {message: "Gagal menambahkan Data keluarga"}
@@ -162,6 +170,45 @@ export const DataKeluargaCreate = async (prevstate:unknown, formData:FormData) =
       revalidatePath("/akun/datakeluarga");
       redirect("/akun/datakeluarga");
   } ;
+
+
+  
+export const updateKK = async (_: unknown, formData: FormData) => {
+  const payload = Object.fromEntries(formData.entries());
+  const no_kk = payload.no_kk as string;
+
+  const parsed = KeluargaSchema.safeParse(payload);
+  if (!parsed.success) {
+    return { error: parsed.error.flatten().fieldErrors };
+  }
+
+  const data: KeluargaInput = parsed.data;
+
+  try {
+    await prisma.kK.update({
+      where: { no_kk },
+      data: {
+        alamat: data.alamat ?? null,
+        nomor_rt: data.nomor_rt,
+      },
+    });
+
+    // update anggota
+    const anggota = data.anggota;
+    for (const a of anggota) {
+      await prisma.penduduk.updateMany({
+        where: { nik: a.nik },
+        data: { no_kk: no_kk },
+      });
+    }
+
+    revalidatePath("/akun/datakeluarga");
+    redirect("/akun/datakeluarga");
+  } catch (error) {
+    console.error("updateKK error", error);
+    return { error: { general: "Gagal update KK" } };
+  }
+};
 
   export async function GetAnggotaKK(noKK: string) {
   const anggota = await prisma.penduduk.findMany({
@@ -171,3 +218,105 @@ export const DataKeluargaCreate = async (prevstate:unknown, formData:FormData) =
 
   return anggota;
 }
+
+export async function DeleteKK (id:number){
+    await prisma.kK.delete({
+        where:{id_kk:id},
+    });
+}
+
+
+export const createRT = async (_prevState: unknown, formData: FormData) => {
+  // optional: cek session & role (hanya admin yang boleh buat RT)
+  const session = await auth();
+  if (!session) {
+    return { error: { general: "User belum terautentikasi" } };
+  }
+
+  const payload = Object.fromEntries(formData.entries());
+  const parsed = RTSchema.safeParse(payload);
+  if (!parsed.success) {
+    return { error: parsed.error.flatten().fieldErrors };
+  }
+
+  const data: RTInput = parsed.data;
+
+  try {
+    // pastikan penduduk ada
+    const penduduk = await prisma.penduduk.findUnique({
+      where: { nik: data.nik },
+      select: { nik: true, nama: true },
+    });
+
+    if (!penduduk) {
+      return { error: { nik: ["Penduduk dengan NIK ini tidak ditemukan"] } };
+    }
+
+    // create RT, ambil nama_lengkap dari penduduk yang dipilih (ketua RT)
+    await prisma.rT.create({
+      data: {
+        nomor_rt: data.nomor_rt,
+        nik: penduduk.nik,
+        nama_lengkap: penduduk.nama,
+        no_hp: data.no_hp ?? null,
+        alamat: data.alamat_jalan ?? null,
+        provinsi: data.provinsi,
+        kabupaten_kota: data.kabupaten,
+        kecamatan: data.kecamatan,
+        desa_kelurahan: data.desa,
+        kode_pos: data.kode_pos ?? null,
+      },
+    });
+
+    // revalidate halaman RT list
+    revalidatePath("/administrasi/rt");
+    redirect("/administrasi/rt");
+  } catch (error) {
+    console.error("createRT error:", error);
+    return { error: { general: "Gagal membuat RT" } };
+  }
+};
+
+export const updateRT = async (_prevState: unknown, formData: FormData) => {
+  const payload = Object.fromEntries(formData.entries());
+  const parsed = RTSchema.safeParse(payload);
+  if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
+
+  const data: RTInput = parsed.data;
+
+  try {
+    // pastikan RT ada
+    await prisma.rT.update({
+      where: { nomor_rt: data.nomor_rt },
+      data: {
+        nik: data.nik,
+        // ambil nama terbaru dari penduduk yg dipilih
+        nama_lengkap: (await prisma.penduduk.findUnique({ where: { nik: data.nik }, select: { nama: true } }))?.nama ?? undefined,
+        no_hp: data.no_hp ?? null,
+        alamat: data.alamat_jalan ?? null,
+        provinsi: data.provinsi,
+        kabupaten_kota: data.kabupaten,
+        kecamatan: data.kecamatan,
+        desa_kelurahan: data.desa,
+        kode_pos: data.kode_pos ?? null,
+      },
+    });
+
+    revalidatePath("/administrasi/rt");
+    redirect("/administrasi/rt");
+  } catch (error) {
+    console.error("updateRT error:", error);
+    return { error: { general: "Gagal update RT" } };
+  }
+};
+
+export const deleteRT = async (id: number) => {
+  try {
+    await prisma.rT.delete({ where: { id_rt:id } });
+    revalidatePath("/administrasi/rt");
+    return { success: true };
+  } catch (error) {
+    console.error("deleteRT error:", error);
+    return { error: { general: "Gagal menghapus RT" } };
+  }
+};

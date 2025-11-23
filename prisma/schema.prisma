@@ -69,6 +69,11 @@ model RT {
   alamat        String?
   nik           String?         @unique(map: "RT_nik_key") @db.VarChar(16)
   upload        FileUploads[]
+  kode_pos           String?
+  desa_kelurahan     String?
+  kecamatan          String?
+  kabupaten_kota     String?
+  provinsi           String?
   kartukeluarga KK[]
   penduduk      Penduduk?       @relation(fields: [nik], references: [nik], map: "RT_nik_fkey")
 }
@@ -82,12 +87,6 @@ model KK {
   no_kk              String     @id @unique(map: "KartuKeluarga_no_kk_key") @db.VarChar(16)
   alamat             String?
   nomor_rt           String?    @db.VarChar(6)
-  kode_pos           String?
-  desa_kelurahan     String?
-  kecamatan          String?
-  kabupaten_kota     String?
-  provinsi           String?
-
   rt                 RT?         @relation(fields: [nomor_rt], references: [nomor_rt], map: "KartuKeluarga_nomor_rt_fkey")
   penduduk           Penduduk[]
 

@@ -28,17 +28,55 @@ export const PendudukUpdateSchema = PendudukSchema.extend({
   id_penduduk: z.number(),
 });
 
-export const KeluargaSchema = z.object ({
-  no_kk:        z.string().min(16, "No KK minimal harus 16 Karakter").max(16, "No KK maksimal 16 Karakter")  , 
-  alamat :      z.string().min(10, "Alamat harus memiliki minimal 10 Karakter"),     
-  nomor_rt :    z.string().min(3, "Nomor RT harus memiliki minimal 3 karakter"),
-  kode_pos :    z.string(),
-  desa_kelurahan :  z.string(),
-  kecamatan :       z.string (),
-  kabupaten_kota :   z.string(),
-  provinsi   :       z.string(),
 
+export const AnggotaSchema = z.object({
+  nik: z.string().min(16).max(16, "NIK harus 16 digit"),
+  hubungan: z.string().optional(), // "Kepala_Keluarga", "Istri", "Anak", dll (opsional)
+});
 
-})
+export const KeluargaSchema = z.object({
+  no_kk: z.string().min(8, "No. KK minimal 8").max(16, "No. KK maksimal 16"),
+  alamat: z.string().min(3).optional(),
+  nomor_rt: z.string().min(1).optional(),
+  anggota: z
+    .string()
+    .optional()
+    .transform((v) => {
+      if (!v) return [] as Array<{ nik: string; hubungan?: string }>;
+      try {
+        const parsed = JSON.parse(v);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [] as Array<{ nik: string; hubungan?: string }>;
+      }
+    }),
+});
 
+export type KeluargaInput = z.infer<typeof KeluargaSchema>;
 export type PendudukUpdateInput = z.infer<typeof PendudukUpdateSchema>;
+
+
+
+export const RTSchema = z.object({
+  nomor_rt: z
+    .string()
+    .min(1, "Nomor RT diperlukan")
+    .max(6, "Nomor RT maksimal 6 karakter"),
+  nik: z
+    .string()
+    .min(16, "NIK harus 16 digit")
+    .max(16, "NIK harus 16 digit"),
+  no_hp: z
+    .string()
+    .optional()
+    .refine((v) => !v || /^\+?\d{8,15}$/.test(v), "Format no HP tidak valid"),
+  alamat_jalan: z.string().optional(),
+  provinsi: z.string().min(2, "Provinsi diperlukan"),
+  kabupaten: z.string().min(2, "Kabupaten/Kota diperlukan"),
+  kecamatan: z.string().min(2, "Kecamatan diperlukan"),
+  desa: z.string().min(2, "Desa/Kelurahan diperlukan"),
+  kode_pos: z.string().min(3).max(6).optional(),
+});
+
+export type RTInput = z.infer<typeof RTSchema>;
+
