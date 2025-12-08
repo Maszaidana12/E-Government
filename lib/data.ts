@@ -4,7 +4,7 @@ export const DataPenduduk = async () => {
     try{
         const user = await prisma.penduduk.findMany();
         return user;
-    } catch(error){
+    } catch{
         throw new Error("Gagal Mengambil Data Penduduk");
     }
 };
@@ -17,7 +17,7 @@ export const DataPendudukById = async (id: number) => {
             }
         });
         return users;
-    } catch(error){
+    } catch{
         throw new Error("Gagal Mengambil Data Penduduk");
     }
 };
@@ -26,7 +26,7 @@ export const DataUsers = async () =>{
         try {
             const users = await prisma.users.findMany();
             return users;
-        } catch(error){
+        } catch{
              throw new Error("Gagal Mengambil Data Penduduk");
         }
 }
@@ -35,7 +35,30 @@ export const DataKeluarga = async () => {
     try{
         const data = await prisma.kK.findMany();
         return data;
-    } catch(error){
+    } catch{
         throw new Error("Gagal Mengambil Data Penduduk");
     }
+};
+
+export const JabatanRT = async() =>{
+    try{
+
+        const data = await prisma.rT.findMany();
+        return data ;
+
+    }catch{
+        throw new Error("gagal mengambil data RT")
+    }
+}
+
+
+export const findUserByNik = async (nik: string) => {
+  try {
+    const user = await prisma.users.findUnique({
+      where: { nik },
+    });
+    return user;
+  } catch {
+    throw new Error("Gagal mengambil data user");
+  }
 };

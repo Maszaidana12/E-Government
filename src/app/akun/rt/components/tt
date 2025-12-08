@@ -1,0 +1,205 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useActionState } from "react";
+import { createRT } from "../../penduduk/validation/actions";
+import { SubmitButton } from "./buttons";
+
+interface WilayahItem {
+  id: string;
+  name: string;
+}
+
+export default function CreateRTFormContainer() {
+  const [state, formAction] = useActionState(createRT, null);
+
+  const [provinces, setProvinces] = useState<WilayahItem[]>([]);
+  const [regencies, setRegencies] = useState<WilayahItem[]>([]);
+  const [districts, setDistricts] = useState<WilayahItem[]>([]);
+  const [villages, setVillages] = useState<WilayahItem[]>([]);
+
+  const [provinsi, setProvinsi] = useState("");
+  const [kabupaten, setKabupaten] = useState("");
+  const [kecamatan, setKecamatan] = useState("");
+
+  // FETCH PROVINSI – CLIENT SIDE
+  useEffect(() => {
+    fetch("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
+      .then((res) => res.json())
+      .then((data) => setProvinces(data))
+      .catch(console.error);
+  }, []);
+
+  // FETCH KABUPATEN
+  useEffect(() => {
+    if (!provinsi) return;
+    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinsi}.json`)
+      .then((res) => res.json())
+      .then((data) => setRegencies(data))
+      .catch(console.error);
+  }, [provinsi]);
+
+  // FETCH KECAMATAN
+  useEffect(() => {
+    if (!kabupaten) return;
+    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${kabupaten}.json`)
+      .then((res) => res.json())
+      .then((data) => setDistricts(data))
+      .catch(console.error);
+  }, [kabupaten]);
+
+  // FETCH DESA
+  useEffect(() => {
+    if (!kecamatan) return;
+    fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${kecamatan}.json`)
+      .then((res) => res.json())
+      .then((data) => setVillages(data))
+      .catch(console.error);
+  }, [kecamatan]);
+
+  return (
+    <form action={formAction} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        {/* NOMOR RT */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="nomor_rt">
+            Nomor RT
+          </label>
+          <input
+            type="text"
+            id="nomor_rt"
+            name="nomor_rt"
+            placeholder="Contoh: 01"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
+          <p className="mt-2 text-sm text-red-500">{state?.Error?.nomor_rt}</p>
+        </div>
+
+        {/* NIK KETUA RT */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="nik">
+            NIK Ketua RT
+          </label>
+          <input
+            type="text"
+            id="nik"
+            name="nik"
+            maxLength={16}
+            placeholder="Masukkan NIK Ketua RT"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
+          <p className="mt-2 text-sm text-red-500">{state?.Error?.nik}</p>
+        </div>
+
+        {/* NAMA KETUA RT */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium mb-1" htmlFor="nama_lengkap">
+            Nama Ketua RT
+          </label>
+          <input
+            type="text"
+            id="nama_lengkap"
+            name="nama_lengkap"
+            placeholder="Masukkan Nama Ketua RT"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
+          <p className="mt-2 text-sm text-red-500">{state?.Error?.nama}</p>
+        </div>
+
+        {/* NOMOR HP */}
+        <div>
+          <label className="block text-sm font-medium mb-1" htmlFor="no_hp">
+            Nomor HP
+          </label>
+          <input
+            type="text"
+            id="no_hp"
+            name="no_hp"
+            placeholder="08xxxxxxxxxx"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
+          <p className="mt-2 text-sm text-red-500">{state?.Error?.no_hp}</p>
+        </div>
+
+        {/* ALAMAT RT */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium mb-1" htmlFor="alamat">
+            Alamat Ketua RT
+          </label>
+          <input
+            type="text"
+            id="alamat"
+            name="alamat"
+            placeholder="Masukkan alamat..."
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
+          <p className="mt-2 text-sm text-red-500">{state?.Error?.alamat}</p>
+        </div>
+      {/* Provinsi */}
+      <div>
+        <label>Provinsi</label>
+        <select
+          name="kode_provinsi"
+          value={provinsi}
+          onChange={(e) => setProvinsi(e.target.value)}
+          className="w-full border p-2 rounded"
+        >
+          <option value="">Pilih Provinsi</option>
+          {provinces.map((p) => (
+            <option key={p.id} value={p.id}>{p.name}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Kabupaten */}
+      <div>
+        <label>Kabupaten</label>
+        <select
+          name="kode_kabupaten"
+          value={kabupaten}
+          onChange={(e) => setKabupaten(e.target.value)}
+          className="w-full border p-2 rounded"
+        >
+          <option value="">Pilih Kabupaten</option>
+          {regencies.map((r) => (
+            <option key={r.id} value={r.id}>{r.name}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Kecamatan */}
+      <div>
+        <label>Kecamatan</label>
+        <select
+          name="kode_kecamatan"
+          value={kecamatan}
+          onChange={(e) => setKecamatan(e.target.value)}
+          className="w-full border p-2 rounded"
+        >
+          <option value="">Pilih Kecamatan</option>
+          {districts.map((d) => (
+            <option key={d.id} value={d.id}>{d.name}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Desa */}
+      <div>
+        <label>Desa</label>
+        <select
+          name="kode_desa"
+          className="w-full border p-2 rounded"
+        >
+          <option value="">Pilih Desa</option>
+          {villages.map((v) => (
+            <option key={v.id} value={v.name}>{v.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="md:col-span-2 flex justify-end">
+        <SubmitButton label="Create" />
+      </div>
+    </form>
+  );
+}

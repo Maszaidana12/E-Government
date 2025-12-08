@@ -9,6 +9,8 @@ import { Search } from "lucide-react";
 import { Session } from "next-auth";
 import ThemeToggle from "./ThemeToogle";
 import { useNavbar } from "@/app/context/NavbarContext";
+import { useEffect, useState } from "react";
+import { useProfile } from "@/app/context/ProfileContext";
 
  
 
@@ -24,6 +26,8 @@ const Navbar =({ isCollapsed, setIsCollapsed, session }: NavbarProps) => {
   
  const { config } = useNavbar();
  
+const { profileImage } = useProfile();
+const displayImage = profileImage || LogoImage;
 
   return (
     <header className= {`h-16 transition-all duration-300
@@ -119,7 +123,7 @@ const Navbar =({ isCollapsed, setIsCollapsed, session }: NavbarProps) => {
                 className="ring-2 ring-gray-200 bg-gray-100 rounded-full"
               >
                 <Image
-                  src={session?.user?.image || LogoImage}
+                  src={displayImage}
                   alt="Foto"
                   width={36}
                   height={36}

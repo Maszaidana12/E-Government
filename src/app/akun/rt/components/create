@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { createRT } from "../../penduduk/validation/actions";
-import { SubmitButton } from "./buttons";
+import { CreateButton} from "./buttons";
 import { startTransition } from "react";
 
 interface WilayahItem {
@@ -76,105 +76,174 @@ export default function CreateRTFormContainer() {
     formData.set("kecamatan", kecamatanName);
     formData.set("desa", desaName);
 
-  startTransition(() => {
+    startTransition(() => {
     formAction(formData);
   });
-};
+  };
+
+
   return (
     <div className="max-w-2xl mx-auto bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md">
       <h2 className="text-xl font-semibold mb-6">Tambah RT Baru</h2>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* ----- INPUT DASHBOARD ----- */}
+
         {/* Nomor RT */}
         <div>
           <label className="block text-sm font-medium mb-1">Nomor RT</label>
-          <input type="text" name="nomor_rt" placeholder="01"
-            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"/>
+          <input
+            type="text"
+            name="nomor_rt"
+            id="nomor_rt"
+            placeholder="01"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
           <p className="text-sm text-red-500">{state?.Error?.nomor_rt}</p>
         </div>
 
         {/* NIK */}
         <div>
           <label className="block text-sm font-medium mb-1">NIK Ketua RT</label>
-          <input type="text" name="nik" maxLength={16} placeholder="Masukkan NIK"
-            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"/>
+          <input
+            type="text"
+            name="nik"
+            id="nik"
+            maxLength={16}
+            placeholder="Masukkan NIK"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
           <p className="text-sm text-red-500">{state?.Error?.nik}</p>
         </div>
 
         {/* Nama */}
         <div>
-          <label className="block text-sm font-medium mb-1">Nama Ketua RT</label>
-          <input type="text" name="nama" placeholder="Masukkan Nama"
-            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"/>
+          <label className="block text-sm font-medium mb-1">
+            Nama Ketua RT
+          </label>
+          <input
+            type="text"
+            name="nama"
+            id="nama"
+            placeholder="Masukkan Nama"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
           <p className="text-sm text-red-500">{state?.Error?.nama}</p>
         </div>
 
-        {/* No HP */}
+        {/* Nomor HP */}
         <div>
           <label className="block text-sm font-medium mb-1">Nomor HP</label>
-          <input type="text" name="no_hp" placeholder="08xxxxxxxxxx"
-            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"/>
+          <input
+            type="text"
+            name="no_hp"
+            id="no_hp"
+            placeholder="08xxxxxxxxxx"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
           <p className="text-sm text-red-500">{state?.Error?.no_hp}</p>
         </div>
 
         {/* Alamat */}
         <div>
           <label className="block text-sm font-medium mb-1">Alamat</label>
-          <input type="text" name="alamat" placeholder="Masukkan alamat..."
-            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"/>
+          <input
+            type="text"
+            id= "alamat"
+            name="alamat"
+            placeholder="Masukkan alamat..."
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
           <p className="text-sm text-red-500">{state?.Error?.alamat}</p>
         </div>
 
-        {/* Kode Pos */}
+         {/* Kode Pos */}
         <div>
-          <label className="block text-sm font-medium mb-1">Kode Pos</label>
-          <input type="text" name="kode_pos" placeholder="Masukkan Kode Pos..."
-            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"/>
-          <p className="text-sm text-red-500">{state?.Error?.kode_pos}</p>
+        <label className="block text-sm font-medium mb-1">Kode Pos</label>
+          <input
+            type="text"
+            name="kode_pos"
+            id="kode_pos"
+            placeholder="Masukkan Kode Pos..."
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+          />
+          <p className="text-sm text-red-500">{state?.Error?.alamat}</p>
         </div>
+
+        {/* ----- WILAYAH ----- */}
 
         {/* Provinsi */}
         <div>
           <label className="block text-sm font-medium mb-1">Provinsi</label>
-          <select name="provinsi" value={provinsi} onChange={(e) => setProvinsi(e.target.value)}
-            className="w-full border p-2 rounded-lg">
+          <select
+            name="provinsi"
+            value={provinsi}
+            onChange={(e) => setProvinsi(e.target.value)}
+            className="w-full border p-2 rounded-lg"
+          >
             <option value="">Pilih Provinsi</option>
-            {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            {provinces.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
           </select>
         </div>
 
         {/* Kabupaten */}
         <div>
           <label className="block text-sm font-medium mb-1">Kabupaten</label>
-          <select name="kabupaten" value={kabupaten} onChange={(e) => setKabupaten(e.target.value)}
-            className="w-full border p-2 rounded-lg">
+          <select
+            name="kabupaten"
+            value={kabupaten}
+            onChange={(e) => setKabupaten(e.target.value)}
+            className="w-full border p-2 rounded-lg"
+          >
             <option value="">Pilih Kabupaten</option>
-            {regencies.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+            {regencies.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
           </select>
         </div>
 
         {/* Kecamatan */}
         <div>
           <label className="block text-sm font-medium mb-1">Kecamatan</label>
-          <select name="kecamatan" value={kecamatan} onChange={(e) => setKecamatan(e.target.value)}
-            className="w-full border p-2 rounded-lg">
+          <select
+            name="kecamatan"
+            value={kecamatan}
+            onChange={(e) => setKecamatan(e.target.value)}
+            className="w-full border p-2 rounded-lg"
+          >
             <option value="">Pilih Kecamatan</option>
-            {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+            {districts.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
           </select>
         </div>
 
         {/* Desa */}
         <div>
-          <label className="block text-sm font-medium mb-1">Desa / Kelurahan</label>
+          <label className="block text-sm font-medium mb-1">
+            Desa / Kelurahan
+          </label>
           <select name="desa" className="w-full border p-2 rounded-lg">
             <option value="">Pilih Desa</option>
-            {villages.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+            {villages.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.name}
+              </option>
+            ))}
           </select>
         </div>
 
-        {/* Submit */}
+        {/* SUBMIT */}
         <div className="md:col-span-2 flex justify-end pt-4">
-          <SubmitButton label="Create" />
+          <CreateButton />
         </div>
       </form>
     </div>

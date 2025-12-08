@@ -22,6 +22,6 @@ export default withAuth(
     { path: "/akun/penduduk", roles: ["RT"] },
     { path: "/rt/rekap", roles: ["RT"] },
     { path: "/rt", roles: ["RT"] },
-    { path: "/admin", roles: ["RT"] },
+   
   ]
 );

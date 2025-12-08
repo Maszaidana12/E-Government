@@ -1,14 +1,13 @@
-import React from 'react'
-import UserProfile from '@/components/profile/profil'
+// src/app/profile/page.tsx (Komponen Profile)
+"use client"; // Halaman harus Client Component untuk menggunakan Provider
 
-const Profile = () => {
-  return (
-    <>
-    <UserProfile />
-    </>
-      
-    
-  )
+import { ProfileProvider } from '@/app/context/ProfileContext'; 
+import ProfileForms from './profile/profil'; // Komponen form Anda
+
+export default function ProfilePage() {
+    return (
+        <ProfileProvider>
+            <ProfileForms />
+        </ProfileProvider>
+    );
 }
-
-export default Profile

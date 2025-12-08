@@ -55,7 +55,12 @@ export const KeluargaSchema = z.object({
 export type KeluargaInput = z.infer<typeof KeluargaSchema>;
 export type PendudukUpdateInput = z.infer<typeof PendudukUpdateSchema>;
 
-
+export const UserUpdateInput = z.object ({
+  nik: z.string().min(16, "NIK minimal 16 digit").max(16, "NIK maksimal 16 digit"),
+  nama: z.string().min(1, "Nama wajib diisi"),
+  images: z.string,
+  password :z.string(). min(4, "Password wajib diisi")
+});
 
 export const RTSchema = z.object({
   nomor_rt: z
@@ -70,7 +75,8 @@ export const RTSchema = z.object({
     .string()
     .optional()
     .refine((v) => !v || /^\+?\d{8,15}$/.test(v), "Format no HP tidak valid"),
-  alamat_jalan: z.string().optional(),
+  alamat: z.string().optional(),
+  nama: z.string().optional(),
   provinsi: z.string().min(2, "Provinsi diperlukan"),
   kabupaten: z.string().min(2, "Kabupaten/Kota diperlukan"),
   kecamatan: z.string().min(2, "Kecamatan diperlukan"),

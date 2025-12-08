@@ -1,10 +1,11 @@
 import TabelDataKeluarga from "@/components/Akun/Keluarga/tabel-data-keluarga";
 import KeluargaClient from "./keluargaclient";
-
+import { DataKeluarga } from "../penduduk/validation/actions";
 
 import React from 'react'
 
-const DataKeluarga = () => {
+const DataKeluargaServer = async() => {
+  const data = await DataKeluarga();
   return (
    <>
     <KeluargaClient />
@@ -16,11 +17,11 @@ const DataKeluarga = () => {
 
       {/* Area tabel yang bisa scroll */}
       <div className="flex-1 relative overflow-x-auto rounded-lg border border-gray-100 bg-white shadow-sm">
-        <TabelDataKeluarga />
+        <TabelDataKeluarga data={data} />
       </div>
     </div>
     </>
   )
 }
 
-export default DataKeluarga
+export default DataKeluargaServer

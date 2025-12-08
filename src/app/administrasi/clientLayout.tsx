@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Navbar, Sidebar } from "@/components/layout";
 import { Session } from "next-auth";
 import { NavbarProvider } from "../context/NavbarContext";
+import { ProfileProvider } from "@/app/context/ProfileContext";
+
 
 
 export default function ClientLayoutAdministrasi({
@@ -17,7 +19,8 @@ export default function ClientLayoutAdministrasi({
 
   return (
     <NavbarProvider>
-       <div className="flex h-screen">
+      <ProfileProvider>
+         <div className="flex h-screen">
       {/* Sidebar */}
       <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
@@ -43,6 +46,7 @@ export default function ClientLayoutAdministrasi({
        
       </div>
     </div>
+      </ProfileProvider>
     </NavbarProvider>
    
   );

@@ -11,25 +11,28 @@ datasource db {
 // Tabel Users & Roles
 // ======================
 model Users {
-  id          String    @id @default(cuid())
-  nik         String    @unique(map: "Users_nik_key") @db.VarChar(16)
-  nama        String?
-  peran       String
-  password    String
-  images      String?
-  penduduk    Penduduk @relation(fields: [nik], references: [nik], onDelete: Cascade, map: "Users_nik_fkey")
+  id       String   @id @default(cuid())
+  nik      String   @unique(map: "Users_nik_key") @db.VarChar(16)
+  nama     String?
+  peran    String
+  password String
+  images   String?
+  penduduk Penduduk @relation(fields: [nik], references: [nik], onDelete: Cascade, map: "Users_nik_fkey")
 
-  accounts     Account[]
-  sessions     Sesi[]
+  accounts Account[]
+  sessions Sesi[]
+
+  notifikasiDiterima Notifikasi[] @relation("NotifReceiver")
+  notifikasiDikirim  Notifikasi[] @relation("NotifSender")
 }
 
 model Sesi {
-  id           String   @id @default(cuid())
-  token_sesi   String   @unique
-  penggunaId   String
-  kadaluarsa   DateTime
+  id         String   @id @default(cuid())
+  token_sesi String   @unique
+  penggunaId String
+  kadaluarsa DateTime
 
-  pengguna     Users    @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+  pengguna Users @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
 }
 
 model TokenVerifikasi {
@@ -41,75 +44,71 @@ model TokenVerifikasi {
 }
 
 model Account {
-  id                String   @id @default(cuid())
+  id                String  @id @default(cuid())
   userId            String
-  type              String   // e.g. "credentials" | "oauth"
-  provider          String   // e.g. "google" | "credentials"
-  providerAccountId String   // ID unik dari provider (misal sub dari Google)
-  access_token      String?  // token oauth (opsional)
-  refresh_token     String?  // token oauth (opsional)
-  expires_at        Int?     // kapan token oauth kadaluarsa
+  type              String // e.g. "credentials" | "oauth"
+  provider          String // e.g. "google" | "credentials"
+  providerAccountId String // ID unik dari provider (misal sub dari Google)
+  access_token      String? // token oauth (opsional)
+  refresh_token     String? // token oauth (opsional)
+  expires_at        Int? // kapan token oauth kadaluarsa
 
-
-  user              Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
-
 
 // ======================
 // Tabel Admin & RT
 // ======================
 model RT {
-
-  id_rt         Int             @id @unique(map: "RT_id_rt_key") @default(autoincrement())
-  nomor_rt      String             @unique(map: "RT_nomor_rt_key") @db.VarChar(6)
-  nama_lengkap  String
-  no_hp         String?          @db.VarChar(13)
-  alamat        String?
-  nik           String?         @unique(map: "RT_nik_key") @db.VarChar(16)
-  upload        FileUploads[]
-  kode_pos           String?
-  desa_kelurahan     String?
-  kecamatan          String?
-  kabupaten_kota     String?
-  provinsi           String?
-  kartukeluarga KK[]
-  penduduk      Penduduk?       @relation(fields: [nik], references: [nik], map: "RT_nik_fkey")
+  id_rt          Int           @id @unique(map: "RT_id_rt_key") @default(autoincrement())
+  nomor_rt       String        @unique(map: "RT_nomor_rt_key") @db.VarChar(6)
+  nama_lengkap   String
+  no_hp          String?       @db.VarChar(13)
+  alamat         String?
+  nik            String?       @unique(map: "RT_nik_key") @db.VarChar(16)
+  upload         FileUploads[]
+  kode_pos       String?
+  desa_kelurahan String?
+  kecamatan      String?
+  kabupaten_kota String?
+  provinsi       String?
+  kartukeluarga  KK[]
+  penduduk       Penduduk?     @relation(fields: [nik], references: [nik], map: "RT_nik_fkey")
 }
 
 // ======================
 // Tabel KK & Pendudu
 // ======================
 model KK {
+  id_kk    Int     @unique(map: "KartuKeluarga_id_kk_key") @default(autoincrement())
+  no_kk    String  @id @unique(map: "KartuKeluarga_no_kk_key") @db.VarChar(16)
+  alamat   String?
+  nomor_rt String? @db.VarChar(6)
+  rt       RT?     @relation(fields: [nomor_rt], references: [nomor_rt], map: "KartuKeluarga_nomor_rt_fkey")
 
-  id_kk              Int        @unique(map: "KartuKeluarga_id_kk_key") @default(autoincrement())
-  no_kk              String     @id @unique(map: "KartuKeluarga_no_kk_key") @db.VarChar(16)
-  alamat             String?
-  nomor_rt           String?    @db.VarChar(6)
-  rt                 RT?         @relation(fields: [nomor_rt], references: [nomor_rt], map: "KartuKeluarga_nomor_rt_fkey")
-  penduduk           Penduduk[]
+  anggota_keluarga Penduduk[] @relation("KK_Penduduk")
 
   @@index([nomor_rt], map: "KartuKeluarga_nomor_rt_fkey")
-  
 }
 
 model SuratPengajuan {
-  id_surat            Int                @id @default(autoincrement())
-  nik                 String?            @db.VarChar(16)
+  id_surat            Int                        @id @default(autoincrement())
+  nik                 String?                    @db.VarChar(16)
   jenis_surat         suratpengajuan_jenis_surat
   keterangan          String?
-  tanggal_pengajuan   DateTime?          @default(now())
+  tanggal_pengajuan   DateTime?                  @default(now())
   tanggal_proses      DateTime?
   tanggal_pengambilan DateTime?
-  status              suratpengajuan_status? @default(Diajukan)
+  status              suratpengajuan_status?     @default(Diajukan)
   fileuploads         FileUploads[]
-  penduduk            Penduduk?          @relation(fields: [nik], references: [nik], map: "SuratPengajuan_nik_fkey")
+  penduduk            Penduduk?                  @relation(fields: [nik], references: [nik], map: "SuratPengajuan_nik_fkey")
   hasil_surat         String? // path file PDF / output surat
   catatan_rt          String?
 
-  id_permohonan       Int?
-  permohonan          Permohonan?        @relation("PermohonanSurat", fields: [id_permohonan], references: [id_permohonan])
+  id_permohonan Int?
+  permohonan    Permohonan? @relation("PermohonanSurat", fields: [id_permohonan], references: [id_permohonan])
 
   @@index([nik], map: "SuratPengajuan_nik_fkey")
 }
@@ -118,7 +117,7 @@ model Penduduk {
   id_penduduk       Int                        @unique(map: "Penduduk_id_penduduk_key") @default(autoincrement())
   nik               String                     @id @unique(map: "Penduduk_nik_key") @db.VarChar(16)
   nama              String
-  user              Users?          
+  user              Users?
   jenis_kelamin     penduduk_jenis_kelamin
   tempat_lahir      String
   tanggal_lahir     DateTime                   @db.Date
@@ -131,62 +130,59 @@ model Penduduk {
   status_hubungan   penduduk_status_hubungan
   no_kk             String?                    @db.VarChar(16)
   fileuploads       FileUploads[]
-  kartukeluarga     KK?             @relation(fields: [no_kk], references: [no_kk], map: "Penduduk_no_kk_fkey")
+  kartukeluarga     KK?                        @relation("KK_Penduduk", fields: [no_kk], references: [no_kk], map: "Penduduk_no_kk_fkey")
   rt                RT?
   suratpengajuan    SuratPengajuan[]
   permohonan        Permohonan[]
 
-   @@index([no_kk], map: "Penduduk_no_kk_fkey")
+  @@index([no_kk], map: "Penduduk_no_kk_fkey")
 }
-
-
 
 model Permohonan {
-  id_permohonan       Int                @id @default(autoincrement())
-  nik                 String             @db.VarChar(16)
-  jenis_permohonan    String
+  id_permohonan    Int    @id @default(autoincrement())
+  nik              String @db.VarChar(16)
+  jenis_permohonan String
 
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  penduduk            Penduduk           @relation(fields: [nik], references: [nik], onDelete: Cascade, map: "Permohonan_nik_fkey")
-  riwayat             Riwayat[]
-  catatan_rt          String?
-  hasil_surat         String?
-  keterangan          String?
+  penduduk    Penduduk  @relation(fields: [nik], references: [nik], onDelete: Cascade, map: "Permohonan_nik_fkey")
+  riwayat     Riwayat[]
+  catatan_rt  String?
+  hasil_surat String?
+  keterangan  String?
 
-  status              permohonan_status   @default(PENDING)
+  status permohonan_status @default(PENDING)
 
-  surat               SuratPengajuan[]   @relation("PermohonanSurat") // satu Permohonan punya banyak Surat
-  fileUploads         FileUploads[]
-
+  surat       SuratPengajuan[] @relation("PermohonanSurat") // satu Permohonan punya banyak Surat
+  fileUploads FileUploads[]
 
   @@index([nik], map: "Permohonan_nik_index")
-
 }
-
 
 model Riwayat {
-  id_riwayat        Int         @id @default(autoincrement())
-  id_permohonan     Int
-  status            String
-  changeAt          DateTime    @default(now())
+  id_riwayat    Int      @id @default(autoincrement())
+  id_permohonan Int
+  status        String
+  changeAt      DateTime @default(now())
 
-  permohonan        Permohonan  @relation(fields: [id_permohonan], references: [id_permohonan], onDelete: Cascade)
+  permohonan Permohonan @relation(fields: [id_permohonan], references: [id_permohonan], onDelete: Cascade)
 
   @@index([id_permohonan])
-
 }
 
-
 model Notifikasi {
-  id_notifikasi  Int @id @default(autoincrement())
-  title          String
-  message        String 
-  type           String // "permohonan" | "lainnya"
-  createdAt      DateTime @default(now())
-} 
+  id         Int      @id @default(autoincrement())
+  receiverId String // ID User penerima (RT)
+  senderId   String? // ID User pengirim (warga), opsional
+  pesan      String
+  type       String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
+  receiver Users  @relation("NotifReceiver", fields: [receiverId], references: [id])
+  sender   Users? @relation("NotifSender", fields: [senderId], references: [id])
+}
 
 model FileUploads {
   id             Int                    @id @default(autoincrement())
@@ -201,18 +197,16 @@ model FileUploads {
   suratpengajuan SuratPengajuan?        @relation(fields: [id_surat], references: [id_surat], map: "FileUploads_id_surat_fkey")
   penduduk       Penduduk?              @relation(fields: [nik], references: [nik], map: "FileUploads_nik_fkey")
   id_permohonan  Int?
-  permohonan     Permohonan? @relation(fields: [id_permohonan], references: [id_permohonan])
+  permohonan     Permohonan?            @relation(fields: [id_permohonan], references: [id_permohonan])
 
   @@index([id_rt], map: "FileUploads_id_rt_fkey")
   @@index([id_surat], map: "FileUploads_id_surat_fkey")
   @@index([nik], map: "FileUploads_nik_fkey")
 }
 
-
 // ======================
 // ENUMS
 // ======================
-
 
 enum permohonan_status {
   PENDING
@@ -220,7 +214,6 @@ enum permohonan_status {
   DITOLAK
   DIPROSES
 }
-
 
 enum suratpengajuan_jenis_surat {
   Surat_Pengantar
