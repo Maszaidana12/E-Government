@@ -6,6 +6,8 @@ import { IoAddSharp, IoPencil, IoTrashOutline } from 'react-icons/io5'
 import { useFormStatus } from 'react-dom';
 import clsx from 'clsx';
 import { DeleteKK, DeletePenduduk, DeleteUsers } from '@/app/akun/penduduk/validation/actions';
+import { Button } from "@/components/ui/button"; // Asumsi ini adalah komponen Button Anda
+import { Loader2 } from "lucide-react"; // Ikon loading
 
 
 
@@ -103,15 +105,26 @@ export const DeleteUsersButton = ({id}:{id:string}) =>{
     );
 };
 
+export const CreateButtonPermohonan = () => {
+  // 💡 Gunakan useFormStatus untuk mendapatkan status loading form
+  const { pending } = useFormStatus();
 
-export const CreateButtonPermohonan = () =>{
-    return (
-       <Link href = "/administrasi/permohonan/" className='inline-flex  rounded-sm items-center space-x-1 text-white bg-blue-700 hover:bg-blue-800
-       px-5[9px] text-sm'>
-      <IoAddSharp size={20} />
-      Tambah
-       </Link>
-    );
+  return (
+    <Button 
+      type="submit" // 💡 SOLUSI PENTING: Harus type="submit"
+      disabled={pending} // Dinonaktifkan saat sedang diproses
+      className="w-full bg-blue-700 hover:bg-blue-800"
+    >
+      {pending ? (
+        // Tampilkan Loading saat pending
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
+        // Tampilkan ikon Tambah saat siap
+        <IoAddSharp size={20} />
+      )}
+      {pending ? "Mengajukan..." : "Ajukan Permohonan"}
+    </Button>
+  );
 };
 
 

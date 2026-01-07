@@ -165,6 +165,11 @@ export const DataKeluargaCreate = async (prevstate: unknown, formData: FormData)
         no_kk: validasi.data.no_kk,
         nomor_rt: dataRT.nomor_rt,
         alamat: dataRT.alamat,
+        kode_pos: dataRT.kode_pos,
+        desa_kelurahan: dataRT.desa_kelurahan,
+        kecamatan: dataRT.kecamatan,
+        kabupaten_kota: dataRT.kabupaten_kota,
+        provinsi: dataRT.provinsi,
       },
     });
 

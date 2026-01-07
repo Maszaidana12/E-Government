@@ -15,12 +15,25 @@ type RT = {
   nomor_rt: string | null;
 };
 
+type AnggotaKeluarga = {
+    nik: string;
+    nama: string;
+    status_hubungan: string; 
+
+}
+
 export type DaftarKeluarga = {
   id_kk: number;
   no_kk: string;
   alamat: string | null;
   nomor_rt: string | null;
   rt?: RT | null;
+  kode_pos: string | null;
+  desa_kelurahan: string | null;
+  kecamatan: string | null;
+  kabupaten_kota: string | null;
+  provinsi: string | null;
+  anggota_keluarga: AnggotaKeluarga[];
 };
 
 interface Props {
@@ -32,11 +45,11 @@ const kolom = [
   { label: "No KK", key: "no_kk" },
   { label: "Alamat", key: "alamat" },
   { label: "Nomor RT", key: "nomor_rt" },
-  { label: "Kode Pos", key: "rt.kode_pos" },
-  { label: "Desa/Kelurahan", key: "rt.desa_kelurahan" },
-  { label: "Kecamatan", key: "rt.kecamatan" },
-  { label: "Kabupaten", key: "rt.kabupaten_kota" },
-  { label: "Provinsi", key: "rt.provinsi" },
+  { label: "Kode Pos", key: "kode_pos" },
+  { label: "Desa/Kelurahan", key: "desa_kelurahan" },
+  { label: "Kecamatan", key: "kecamatan" },
+  { label: "Kabupaten", key: "kabupaten_kota" },
+  { label: "Provinsi", key: "provinsi" },
   { label: "Aksi", key: "actions" },
 ] as const;
 
@@ -44,21 +57,16 @@ export default function TabelDataKeluarga({ data }: Props) {
   const [openRow, setOpenRow] = useState<string | null>(null);
 
   const getCellValue = (item: DaftarKeluarga, colKey: string) => {
-    if (colKey === "actions") {
-      return (
-        <div className="flex items-center justify-center gap-2">
-          <EditKeluargaButton id={item.id_kk} />
-          <DeleteKeluargaButton id={item.id_kk} />
-        </div>
-      );
-    }
-
-    if (colKey.startsWith("rt.")) {
-      return String(item.rt?.[colKey.split(".")[1] as keyof RT] ?? "");
-    }
-
-    return String(item[colKey as keyof DaftarKeluarga] ?? "");
-  };
+  if (colKey === "actions") {
+    return (
+      <div className="flex items-center justify-center gap-2">
+        <EditKeluargaButton id={item.id_kk} />
+        <DeleteKeluargaButton id={item.id_kk} />
+      </div>
+    );
+  }
+  return String(item[colKey as keyof DaftarKeluarga] ?? "");
+};
 
   return (
     <div className="w-full">

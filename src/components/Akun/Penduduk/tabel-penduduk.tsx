@@ -1,9 +1,10 @@
 import { DataPenduduk } from "lib/data";
-import { EditButton, DeleteButton } from '../buttons';
+import { EditButton, DeleteButton } from "../buttons";
 
 const kolom = [
   { label: "ID", key: "id_penduduk" },
   { label: "NIK", key: "nik" },
+  { label: "No. KK", key: "no_kk" },
   { label: "Nama", key: "nama" },
   { label: "Jenis Kelamin", key: "jenis_kelamin" },
   { label: "Tempat Lahir", key: "tempat_lahir" },
@@ -19,60 +20,93 @@ const kolom = [
   { label: "Pengaturan", key: "actions" },
 ] as const;
 
-const TabelPenduduk = async() => {
+export default async function TabelPenduduk() {
   const data = await DataPenduduk();
-  
-  return (
-    <div className="w-full h-full">
-      <div className="max-w-full overflow-x-auto overflow-y-auto rounded-lg shadow-md border border-gray-200">
-          <table className='min-w-max text-sm text-center font-outfit text-gray-600 bg-white'>
-      <thead>
-        <tr>
-          {kolom.map((col, idx) => (
-            <th
-              key={idx}
-              className={`px-10 py-3 text-center ${col.label === 'Pengaturan'}`}
-            >
-              {col.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        
-          {data.map((data, idx: number) => (
-            <tr 
-            key = {data.id_penduduk || idx} 
-            className="bg-white border-b"
-            >
-              {kolom.map((col,i)=>(
-                <td  
-                key={i}
-                className={`px-4 py-3 border-b border-gray-200 truncate max-w-[200px] ${col.label === "Pengaturan" ? 'text-center' : ''
-                }`}
-                
-                >
-                 {col.key === "actions" ? (
-                <div className="items-center">
-                    <EditButton id={data.id_penduduk}/>
-                    <DeleteButton  id={data.id_penduduk} />
-                </div>
-                ) : col.key === "tanggal_lahir" ? (
-                  new Date(data.tanggal_lahir).toLocaleDateString("id-ID")
-                ) : (
-                String(data[col.key as keyof typeof data] ?? "")
-                )}         
-            </td>
-              ))}         
-              </tr>
-          ))}
-      </tbody>
-    </table>
-    </div>
-    </div>
-    
-    
-  )
-}
 
-export default TabelPenduduk
+  return (
+    <div className="w-full space-y-4">
+
+      {/* ================= MOBILE (HP) ================= */}
+      <div className="lg:hidden space-y-4">
+        {data.map((item, idx) => (
+          <div
+            key={item.id_penduduk || idx}
+            className="bg-white rounded-xl border shadow-sm p-4"
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold text-gray-800">
+                {item.nama}
+              </h3>
+              <div className="flex gap-2">
+                <EditButton id={item.id_penduduk} />
+                <DeleteButton id={item.id_penduduk} />
+              </div>
+            </div>
+
+            <div className="text-sm text-gray-600 space-y-1">
+              <p><b>NIK:</b> {item.nik}</p>
+              <p><b>No KK:</b> {item.no_kk}</p>
+              <p><b>Jenis Kelamin:</b> {item.jenis_kelamin}</p>
+              <p>
+                <b>TTL:</b> {item.tempat_lahir},{" "}
+                {new Date(item.tanggal_lahir).toLocaleDateString("id-ID")}
+              </p>
+              <p><b>Pekerjaan:</b> {item.pekerjaan}</p>
+              <p><b>Status:</b> {item.status_perkawinan}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ================= DESKTOP (TETAP LEBAR) ================= */}
+      <div className="hidden lg:block">
+        <div className="w-full overflow-x-auto rounded-lg shadow-md border border-gray-200">
+          <table className="min-w-[1600px] text-sm text-center font-outfit text-gray-600 bg-white">
+            <thead className="bg-gray-50">
+              <tr>
+                {kolom.map((col, idx) => (
+                  <th
+                    key={idx}
+                    className="px-6 py-3 whitespace-nowrap font-semibold"
+                  >
+                    {col.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody>
+              {data.map((item, idx) => (
+                <tr
+                  key={item.id_penduduk || idx}
+                  className="border-b hover:bg-gray-50"
+                >
+                  {kolom.map((col, i) => (
+                    <td
+                      key={i}
+                      className={`px-4 py-3 max-w-[220px] truncate ${
+                        col.key === "actions" ? "text-center" : ""
+                      }`}
+                    >
+                      {col.key === "actions" ? (
+                        <div className="flex justify-center gap-2">
+                          <EditButton id={item.id_penduduk} />
+                          <DeleteButton id={item.id_penduduk} />
+                        </div>
+                      ) : col.key === "tanggal_lahir" ? (
+                        new Date(item.tanggal_lahir).toLocaleDateString("id-ID")
+                      ) : (
+                        String(item[col.key as keyof typeof item] ?? "")
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  );
+}

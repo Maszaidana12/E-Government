@@ -87,6 +87,11 @@ model KK {
   alamat   String?
   nomor_rt String? @db.VarChar(6)
   rt       RT?     @relation(fields: [nomor_rt], references: [nomor_rt], map: "KartuKeluarga_nomor_rt_fkey")
+  kode_pos       String?
+  desa_kelurahan String?
+  kecamatan      String?
+  kabupaten_kota String?
+  provinsi       String?
 
   anggota_keluarga Penduduk[] @relation("KK_Penduduk")
 
@@ -175,7 +180,8 @@ model Notifikasi {
   id         Int      @id @default(autoincrement())
   receiverId String // ID User penerima (RT)
   senderId   String? // ID User pengirim (warga), opsional
-  pesan      String
+  message    String
+  title      String? // Tambahkan kolom title
   type       String
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())
@@ -213,6 +219,7 @@ enum permohonan_status {
   DISETUJUI
   DITOLAK
   DIPROSES
+  SELESAI
 }
 
 enum suratpengajuan_jenis_surat {
