@@ -97,9 +97,8 @@ const permohonanWithRelations = Prisma.validator<Prisma.PermohonanDefaultArgs>()
 });
 
 // 💡 FIX: Tipe Data Prisma yang Benar (Menggantikan 'any')
-type PermohonanPrisma = Prisma.PermohonanGetPayload<typeof permohonanWithRelations>; 
 
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mapPrismaToDaftarPermohonan(data: any[]): DaftarPermohonan[] {
   return data.map((p) => ({
     id: p.id_permohonan.toString(),

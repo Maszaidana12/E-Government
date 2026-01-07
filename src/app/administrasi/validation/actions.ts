@@ -5,7 +5,7 @@ import { PermohonanSchema, PermohonanInput } from "./validation";
 import { revalidatePath } from "next/cache";
 import { sendNotifToRT } from "./sendNotifToRT";
 import { auth } from "auth";
-import { Penduduk, KK } from "@prisma/client"; // Import tipe Prisma jika perlu
+import { Penduduk} from "@prisma/client"; // Import tipe Prisma jika perlu
 import { mapPermohonanStatus } from "lib/permohonan-mapper";
 
 // --- DEFINISI FIELD DINAMIS (HARUS SAMA PERSIS DENGAN CLIENT) ---
